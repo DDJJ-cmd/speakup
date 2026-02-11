@@ -321,18 +321,76 @@ function clearAllHistory() {
 
 // ---- Render topic ----
 function renderTopic() {
-  if (!topics || topics.length === 0) {
-    document.getElementById('topicTitle').textContent = 'No topics found';
-    document.getElementById('topicGuide').textContent = 'topics配列が空です';
-    return;
+  try {
+    var d = new Date();
+    var dayOfMonth = d.getDate();
+    var topicIndex = (dayOfMonth - 1) % topics.length;
+    var topic = topics[topicIndex];
+
+    // タイトル
+    document.getElementById('topicTitle').textContent = topic.title;
+
+    // ガイド文（idが無いので、Todayカード内の最初のガイド文を上書き）
+    var guideEl = document.querySelector('#viewToday .card .muted.small');
+    if (guideEl) guideEl.textContent = topic.guide;
+
+    // Prompts（正しいID：promptList）
+    var promptsHTML = '';
+    for (var i = 0; i < topic.prompts.length; i++) {
+      promptsHTML += '<li>' + topic.prompts[i] + '</li>';
+    }
+    document.getElementById('promptList').innerHTML = promptsHTML;
+
+    // Keywords（正しいID：keywordList）
+    var keywordsHTML = '';
+    for (var j = 0; j < topic.keywords.length; j++) {
+      var kw = topic.keywords[j];
+      keywordsHTML +=
+        '<li onclick="copyKeyword(\'' +
+        kw.en.replace(/'/g, "\\'") + '\',\'' +
+        kw.ja.replace(/'/g, "\\'") + '\',\'' +
+        kw.uses.replace(/'/g, "\\'") + '\')">' +
+        '<b>' + kw.en + '</b> <span class="muted">(' + kw.ja + ')</span>' +
+        '<div class="small muted">uses: ' + kw.uses + '</div>' +
+        '</li>';
+    }
+    document.getElementById('keywordList').innerHTML = keywordsHTML;
+
+    // Notes生成（ざっくり差し替え：全文作るなら後で拡張）
+    var notes = '🟰今日のキーワード ' + topic.keywords[0].en + '\n' + getDateString() + '\n\n';
+    notes += 'Topic: ' + topic.title + '\n\nPrompts:\n- ' + topic.prompts.join('\n- ') + '\n\nKeywords:\n';
+    for (var k = 0; k < topic.keywords.length; k++) {
+      notes += '- ' + topic.keywords[k].en + ' = ' + topic.keywords[k].ja + '\n  uses: ' + topic.keywords[k].uses + '\n';
+    }
+    notes += '\n---\n【Chat Memo（会話の要点をここに追記）】\n- ';
+    document.getElementById('notesArea').value = notes;
+
+    // ChatGPT URLを生成してボタン作成
+    var kwList = topic.keywords.map(function(x){ return x.en; });
+    var qs = topic.prompts.map(function(q, idx){ return (idx+1) + ') ' + q; }).join('\n');
+
+    var prompt =
+      "Let's practice English speaking.\n\n" +
+      "Today's topic: " + topic.title + "\n\n" +
+      "Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.\n\n" +
+      "Questions:\n" + qs + "\n\n" +
+      "Keywords to try using: " + kwList.join(', ') + "\n\n" +
+      "Start with question 1.";
+
+    var url = 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
+
+    var btnHTML =
+      '<a href="' + url + '" class="btn" style="display:block; text-align:center; text-decoration:none;" onclick="recordOpened()">' +
+      "Let's speak up!" +
+      '</a>';
+
+    document.getElementById('speakUpBtnContainer').innerHTML = btnHTML;
+
+    log('Topic rendered: ' + topic.title);
+  } catch (e) {
+    log('renderTopic error: ' + e.message);
   }
-
-  var d = new Date();
-  var idx = (d.getDate() - 1) % topics.length;
-  var topic = topics[idx];
-
-  document.getElementById('topicTitle').textContent = topic.title || '---';
-  document.getElementById('topicGuide').textContent = topic.guide || '';
+}
 
   // prompts
   var promptsHTML = '';
