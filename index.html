@@ -74,7 +74,6 @@
       padding:8px 10px;
       outline:none;
       font-weight:800;
-      max-width:520px;
       appearance:none;
       -webkit-appearance:none;
       -moz-appearance:none;
@@ -305,12 +304,12 @@
 
 <script>
 /* =========================
-   SpeakUp：HMJ専用 30 Topics（完全実装）
+   SpeakUp：HMJ専用 30 Topics
    ========================= */
 const TOPICS = [
   {
     title: "Monthly Performance Story (Budget vs Actual)",
-    guide: "Budgetベースで月次のギャップ要因と次の打ち手を英語で説明する。",
+    guide: "Budgetベースで月次の差異要因と次の打ち手を英語で説明する。",
     prompts: [
       "What were the key drivers of the gap versus budget this month?",
       "Which department contributed most to the variance and why?",
@@ -321,13 +320,13 @@ const TOPICS = [
       { en:"variance", ja:"差異", uses:"We saw a negative variance versus budget. / Please explain the main variance drivers. / The variance narrowed in the second half." },
       { en:"driver", ja:"要因", uses:"The primary driver was ADR softness. / Labor cost was another key driver. / We need to isolate the real drivers." },
       { en:"mitigation", ja:"対策", uses:"We have mitigation actions in place. / Mitigation will focus on cost containment. / Revenue mitigation is limited in low season." },
-      { en:"forecast confidence", ja:"予測の確度", uses:"Our forecast confidence is moderate. / Confidence improved after pickup trends stabilized. / Low visibility reduces forecast confidence." },
+      { en:"forecast confidence", ja:"予測の確度", uses:"Our forecast confidence is moderate. / Confidence improved after pickup stabilized. / Low visibility reduces forecast confidence." },
       { en:"headwind", ja:"逆風要因", uses:"Weak demand is a headwind. / OTA mix is a headwind to ADR. / Weather can be a short-term headwind." }
     ]
   },
   {
     title: "Flow-Through Diagnosis (ADR-led vs OCC-led)",
-    guide: "Flow-throughの良化/悪化をADR主導かOCC主導かで切り分けて話す。",
+    guide: "Flow-throughをADR主導かOCC主導かで切り分けて説明する。",
     prompts: [
       "Is the revenue change driven more by ADR or occupancy? How do you know?",
       "Which variable costs moved with volume (CPOR) and impacted flow-through?",
@@ -339,12 +338,12 @@ const TOPICS = [
       { en:"ADR-led", ja:"ADR主導", uses:"ADR-led growth usually improves margin. / This month was not ADR-led. / We aim for ADR-led recovery." },
       { en:"OCC-led", ja:"稼働率主導", uses:"OCC-led growth can increase variable costs. / OCC-led pickup hurt flow-through. / OCC-led demand requires cost discipline." },
       { en:"variable cost", ja:"変動費", uses:"Variable costs rose with rooms sold. / Identify variable cost leakage. / Variable costs should scale predictably." },
-      { en:"CPOR", ja:"販売客室数あたり変動費", uses:"CPOR increased mainly from linen and amenities. / CPOR is a good early warning metric. / We need to stabilize CPOR." }
+      { en:"CPOR", ja:"販売客室数あたり変動費", uses:"CPOR increased mainly from linen and amenities. / CPOR is a useful early warning metric. / We need to stabilize CPOR." }
     ]
   },
   {
     title: "ADR Strategy and Rate Integrity",
-    guide: "割引/クーポン/レートミックスの観点でADRを守る議論をする。",
+    guide: "割引やクーポンの影響を踏まえ、ADRを守る戦略を英語で話す。",
     prompts: [
       "What is your ADR protection strategy in a soft-demand period?",
       "How do discounts and coupons affect rate integrity and long-term ADR?",
@@ -352,16 +351,16 @@ const TOPICS = [
       "How do you coordinate revenue decisions with Sales & Marketing?"
     ],
     keywords: [
-      { en:"rate integrity", ja:"レート整合性", uses:"We need to protect rate integrity. / Rate integrity is at risk with aggressive discounts. / Rate integrity supports long-term positioning." },
+      { en:"rate integrity", ja:"レート整合性", uses:"We need to protect rate integrity. / Rate integrity is at risk with deep discounts. / Rate integrity supports long-term positioning." },
       { en:"discount dependency", ja:"値引き依存", uses:"Discount dependency is risky. / We should reduce discount dependency. / Discount dependency lowers long-term ADR." },
       { en:"rate mix", ja:"レート構成", uses:"Rate mix shifted to lower-paying channels. / We need a healthier rate mix. / Rate mix impacts profit quality." },
-      { en:"segmentation", ja:"セグメント設計", uses:"Segmentation helps us target the right guests. / We refined segmentation by purpose of stay. / Segmentation supports pricing decisions." },
-      { en:"fence", ja:"条件設定（レートフェンス）", uses:"We added fences to protect higher rates. / Fence design reduces abuse. / Strong fences improve ADR." }
+      { en:"segmentation", ja:"セグメント設計", uses:"Segmentation helps target the right guests. / We refined segmentation by purpose of stay. / Segmentation supports pricing decisions." },
+      { en:"fence", ja:"条件設定（フェンス）", uses:"We added fences to protect higher rates. / Fence design reduces abuse. / Strong fences support ADR." }
     ]
   },
   {
     title: "Occupancy Management and Pickup Control",
-    guide: "Pickup推移と制限（LOS/CTA/CTD）でOCCを制御する話をする。",
+    guide: "Pickupと制限（LOS/CTA/CTD）でOCCをコントロールする話をする。",
     prompts: [
       "How did pickup evolve in the last two weeks, and what changed?",
       "What restrictions did you apply (LOS, CTA/CTD) and why?",
@@ -371,14 +370,14 @@ const TOPICS = [
     keywords: [
       { en:"pickup", ja:"予約積み上がり", uses:"Pickup improved after the campaign launch. / Pickup slowed in midweek. / We monitor pickup daily." },
       { en:"LOS", ja:"最低宿泊数", uses:"We applied LOS to peak dates. / LOS helps protect high-demand nights. / LOS can reduce low-value bookings." },
-      { en:"CTA/CTD", ja:"到着/出発制限", uses:"CTA was used to manage shoulder nights. / CTD protects peak arrivals. / Use CTA/CTD carefully to avoid lost demand." },
+      { en:"CTA/CTD", ja:"到着/出発制限", uses:"CTA was used to protect shoulder nights. / CTD helps manage peak departures. / Use CTA/CTD carefully to avoid lost demand." },
       { en:"inventory control", ja:"在庫コントロール", uses:"Inventory control supports rate optimization. / We tightened inventory for premium rooms. / Inventory control affects channel behavior." },
-      { en:"compression", ja:"需要集中", uses:"Compression supports higher pricing. / There is no compression in the market. / Compression periods require discipline." }
+      { en:"compression", ja:"需要集中", uses:"Compression supports higher pricing. / There is limited compression in the market. / Compression periods require discipline." }
     ]
   },
   {
     title: "RevPAR vs GOP: Explaining the Trade-off",
-    guide: "RevPARの変化がGOPにどう効いたか（効かなかったか）を説明する。",
+    guide: "RevPARの動きがGOPにどう効いたかを英語で整理して説明する。",
     prompts: [
       "How did RevPAR move versus budget and what were the components?",
       "Did higher revenue translate to GOP improvement? Why or why not?",
@@ -386,16 +385,16 @@ const TOPICS = [
       "What is your plan to improve GOP without sacrificing demand?"
     ],
     keywords: [
-      { en:"RevPAR", ja:"客室収益指標", uses:"RevPAR declined versus budget. / RevPAR improved on weekends. / RevPAR performance lagged competitors." },
-      { en:"leverage", ja:"レバレッジ効果", uses:"We lost operating leverage due to cost inflation. / Leverage improves when fixed costs are stable. / We need better leverage on revenue growth." },
-      { en:"conversion", ja:"利益転換", uses:"Revenue conversion to GOP was weaker. / Conversion improved after cost controls. / Monitor conversion by department." },
-      { en:"cost inflation", ja:"コスト上昇", uses:"Cost inflation pressured margins. / Inflation hit utilities and supplies. / Inflation requires repricing and efficiency." },
-      { en:"profit quality", ja:"利益の質", uses:"Profit quality deteriorated due to OTA mix. / We focus on profit quality, not just volume. / Profit quality matters for long-term strategy." }
+      { en:"RevPAR", ja:"客室収益（指標）", uses:"RevPAR declined versus budget. / RevPAR improved on weekends. / RevPAR lagged the market." },
+      { en:"leverage", ja:"レバレッジ効果", uses:"We lost operating leverage due to cost creep. / Leverage improves when fixed costs are stable. / We need better leverage on revenue." },
+      { en:"conversion", ja:"利益転換", uses:"Revenue conversion to GOP was weaker. / Conversion improved after controls. / Monitor conversion by department." },
+      { en:"cost inflation", ja:"コスト上昇", uses:"Cost inflation pressured margins. / Inflation hit utilities and supplies. / Inflation requires efficiency actions." },
+      { en:"profit quality", ja:"利益の質", uses:"Profit quality weakened due to OTA mix. / We focus on profit quality, not only volume. / Profit quality matters for strategy." }
     ]
   },
   {
     title: "Rooms Department Profit Deep Dive",
-    guide: "Rooms利益をRate/Volume/MixとCPORの観点で深掘りする。",
+    guide: "Rooms利益をRate/Volume/MixとCPORで要因分解して話す。",
     prompts: [
       "What drove rooms department profit versus budget (rate, volume, mix)?",
       "How did housekeeping, linen, and amenities costs move with volume?",
@@ -403,16 +402,16 @@ const TOPICS = [
       "How do you align front office and housekeeping to improve efficiency?"
     ],
     keywords: [
-      { en:"department profit", ja:"部門利益", uses:"Rooms department profit missed budget. / Department profit improved with higher ADR. / We need to protect department profit." },
-      { en:"mix", ja:"ミックス", uses:"Mix shifted to lower-rated segments. / Mix improvement helped ADR. / Mix changes explain half of the variance." },
-      { en:"linen", ja:"リネン費", uses:"Linen cost increased per occupied room. / We need linen cost controls. / Linen usage policy affects CPOR." },
-      { en:"amenities", ja:"アメニティ", uses:"Amenity cost rose due to higher usage. / We should standardize amenities. / Amenities must balance cost and brand." },
-      { en:"productivity", ja:"生産性", uses:"Productivity improved after scheduling changes. / We track productivity per room cleaned. / Productivity is key for margin." }
+      { en:"department profit", ja:"部門利益", uses:"Rooms department profit missed budget. / Department profit improved with higher ADR. / Protect department profit with discipline." },
+      { en:"mix", ja:"ミックス", uses:"Mix shifted to lower-rated segments. / Mix improvement helped ADR. / Mix explains a large part of the variance." },
+      { en:"linen", ja:"リネン費", uses:"Linen cost increased per occupied room. / We need linen usage controls. / Linen policy affects CPOR." },
+      { en:"amenities", ja:"アメニティ", uses:"Amenity cost rose due to higher usage. / We should standardize amenities. / Balance cost and brand standards." },
+      { en:"productivity", ja:"生産性", uses:"Productivity improved after scheduling changes. / Track rooms cleaned per hour. / Productivity is key for margin." }
     ]
   },
   {
     title: "F&B Profitability and Cost Control",
-    guide: "料飲の売上・原価・人件費・メニュー施策を英語で整理して話す。",
+    guide: "料飲の売上・原価・人件費・メニュー施策を英語で説明する。",
     prompts: [
       "Which outlets performed best and what drove the results?",
       "How did food cost and beverage cost compare to targets?",
@@ -420,16 +419,16 @@ const TOPICS = [
       "How do you manage staffing flexibly while maintaining service?"
     ],
     keywords: [
-      { en:"food cost", ja:"食材原価", uses:"Food cost was higher due to waste. / Food cost improved after menu changes. / We need stricter food cost controls." },
+      { en:"food cost", ja:"食材原価", uses:"Food cost was higher due to waste. / Food cost improved after menu changes. / We need tighter food cost controls." },
       { en:"menu engineering", ja:"メニュー最適化", uses:"Menu engineering focuses on high-margin items. / We will redesign the menu mix. / Menu engineering supports profitability." },
       { en:"waste", ja:"廃棄", uses:"Waste increased due to low covers. / We reduced waste with prep controls. / Waste tracking is essential." },
-      { en:"covers", ja:"客数", uses:"Covers declined midweek. / Covers improved with group business. / Covers drive labor scheduling." },
-      { en:"labor flexibility", ja:"人員の柔軟運用", uses:"Labor flexibility helps protect margin. / We cross-train staff for flexibility. / Flexibility prevents overstaffing." }
+      { en:"covers", ja:"客数", uses:"Covers declined midweek. / Covers improved with group demand. / Covers drive labor scheduling." },
+      { en:"labor flexibility", ja:"人員の柔軟運用", uses:"Labor flexibility protects margin. / We cross-train staff for flexibility. / Flexibility prevents overstaffing." }
     ]
   },
   {
     title: "Banquet & MICE: Booking Pace and Profit",
-    guide: "宴会の予約ペースと利益構造（単価・原価・人件費）を説明する。",
+    guide: "宴会の予約ペース、単価、コスト、利益を整理して英語で話す。",
     prompts: [
       "How is booking pace trending for the next 90 days?",
       "Which segments (weddings, corporate, social) are driving demand?",
@@ -437,33 +436,33 @@ const TOPICS = [
       "How do you manage labor and outsourcing for banquet operations?"
     ],
     keywords: [
-      { en:"booking pace", ja:"予約ペース", uses:"Booking pace is behind plan. / Pace improved after sales blitz. / Track booking pace weekly." },
-      { en:"pipeline", ja:"案件パイプライン", uses:"The pipeline is healthy for Q2. / Pipeline quality matters more than quantity. / We need stronger pipeline conversion." },
+      { en:"booking pace", ja:"予約ペース", uses:"Booking pace is behind plan. / Pace improved after a sales blitz. / Track booking pace weekly." },
+      { en:"pipeline", ja:"案件パイプライン", uses:"The pipeline is healthy for next quarter. / Pipeline quality matters more than quantity. / We need better pipeline conversion." },
       { en:"conversion rate", ja:"成約率", uses:"Conversion rate dropped due to pricing. / Improve conversion rate with packages. / Conversion rate is a key KPI." },
-      { en:"outsourcing", ja:"外注", uses:"Outsourcing costs increased unexpectedly. / We should control outsourcing scope. / Outsourcing helps during peak demand." },
-      { en:"function space", ja:"宴会場", uses:"Function space utilization is low. / We can improve space yield. / Space strategy affects banquet profit." }
+      { en:"outsourcing", ja:"外注", uses:"Outsourcing costs increased unexpectedly. / Control outsourcing scope and vendors. / Outsourcing helps during peak demand." },
+      { en:"function space", ja:"宴会場", uses:"Function space utilization is low. / Improve space yield with smarter blocks. / Space strategy affects banquet profit." }
     ]
   },
   {
     title: "Undistributed Expenses: Utilities & POM",
-    guide: "Utilities/POMの増減要因と、月次の予測と対策を英語で話す。",
+    guide: "Utilities/POMの増減要因を整理し、対策を英語で説明する。",
     prompts: [
       "What caused utilities to move versus budget (weather, usage, rates)?",
-      "Which POM items were one-time vs recurring?",
+      "Which POM items were one-time versus recurring?",
       "What preventive maintenance can reduce cost volatility?",
       "How do you track and forecast undistributed expenses monthly?"
     ],
     keywords: [
-      { en:"undistributed expenses", ja:"非配賦費用", uses:"Undistributed expenses were well controlled. / They remain elevated due to utilities. / We need a plan to manage undistributed expenses." },
-      { en:"utilities", ja:"光熱費", uses:"Utilities increased due to higher consumption. / Utilities were lower after optimization. / Utilities are sensitive to occupancy and weather." },
-      { en:"POM", ja:"施設管理・修繕", uses:"POM had one-time repairs. / POM forecast needs better visibility. / POM spend is front-loaded this quarter." },
-      { en:"one-time", ja:"一過性", uses:"This cost is one-time, not structural. / Separate one-time from recurring items. / One-time expenses distort trend analysis." },
-      { en:"preventive maintenance", ja:"予防保全", uses:"Preventive maintenance reduces breakdown risk. / It helps stabilize POM costs. / We need a preventive maintenance plan." }
+      { en:"undistributed expenses", ja:"非配賦費用", uses:"Undistributed expenses remained elevated. / They were controlled versus plan. / We need a plan to manage undistributed expenses." },
+      { en:"utilities", ja:"光熱費", uses:"Utilities increased due to higher consumption. / Utilities improved after optimization. / Utilities are sensitive to weather and occupancy." },
+      { en:"POM", ja:"施設管理・修繕", uses:"POM included one-time repairs. / POM needs better visibility in forecast. / POM spend is front-loaded this quarter." },
+      { en:"one-time", ja:"一過性", uses:"This cost is one-time, not structural. / Separate one-time from recurring items. / One-time expenses distort trends." },
+      { en:"preventive maintenance", ja:"予防保全", uses:"Preventive maintenance reduces breakdown risk. / It stabilizes POM costs. / We need a preventive maintenance plan." }
     ]
   },
   {
     title: "Sales & Marketing Spend vs ROI (OTA Focus)",
-    guide: "S&Mの費用対効果を、OTA施策とネット収益の観点で説明する。",
+    guide: "S&M（特にOTA施策）の費用対効果とADR影響を英語で話す。",
     prompts: [
       "What S&M activities drove bookings and what is the ROI?",
       "How did OTA promotions affect ADR and net revenue?",
@@ -471,16 +470,16 @@ const TOPICS = [
       "How do you evaluate marketing effectiveness without over-discounting?"
     ],
     keywords: [
-      { en:"ROI", ja:"投資対効果", uses:"ROI is unclear without tracking. / We need ROI by campaign. / ROI improved after targeting the right segment." },
+      { en:"ROI", ja:"投資対効果", uses:"ROI is unclear without tracking. / We need ROI by campaign. / ROI improved after better targeting." },
       { en:"net ADR", ja:"純ADR", uses:"Net ADR fell due to commissions. / Focus on net ADR, not just headline ADR. / Net ADR reflects true profitability." },
       { en:"commission", ja:"手数料", uses:"Commission costs increased. / Commission impacts net revenue. / Commission control is critical for profit." },
-      { en:"promotion", ja:"販促", uses:"Promotion boosted volume but diluted rate. / Promotions should be time-boxed. / Promotion strategy must protect brand." },
-      { en:"attribution", ja:"効果測定", uses:"Attribution is difficult across channels. / We need better attribution tracking. / Attribution informs budget allocation." }
+      { en:"promotion", ja:"販促", uses:"Promotion boosted volume but diluted rate. / Promotions should be time-boxed. / Promotions must protect brand." },
+      { en:"attribution", ja:"効果測定", uses:"Attribution is hard across channels. / We need better attribution rules. / Attribution informs budget allocation." }
     ]
   },
   {
     title: "Forecast Review: Risks, Assumptions, and Sensitivity",
-    guide: "Forecastの前提・リスク・感応度（ADR/OCC）を英語で議論する。",
+    guide: "Forecastの前提・リスク・感応度を英語で説明して整合を取る。",
     prompts: [
       "What are the key assumptions behind your forecast this month?",
       "Which risks could cause downside, and what are early indicators?",
@@ -488,7 +487,7 @@ const TOPICS = [
       "How will you update the forecast based on pickup trends?"
     ],
     keywords: [
-      { en:"assumption", ja:"前提", uses:"Assumptions are conservative. / We need to validate key assumptions. / Assumptions changed after market updates." },
+      { en:"assumption", ja:"前提", uses:"Assumptions are conservative. / We must validate key assumptions. / Assumptions changed after market updates." },
       { en:"downside risk", ja:"下振れリスク", uses:"Downside risk is demand softness. / Identify downside risk triggers. / We prepared mitigation for downside risk." },
       { en:"sensitivity", ja:"感応度", uses:"Sensitivity to ADR is high. / Run sensitivity scenarios. / Sensitivity analysis supports decisions." },
       { en:"scenario", ja:"シナリオ", uses:"We prepared base, upside, and downside scenarios. / Scenario planning improves readiness. / Use scenarios to align stakeholders." },
@@ -497,24 +496,24 @@ const TOPICS = [
   },
   {
     title: "Explaining a Reforecast (Why Numbers Changed)",
-    guide: "前回予測からの変更点を、再掲ではなくロジックで説明する。",
+    guide: "前回予測から変わった理由を、再掲ではなくロジックで説明する。",
     prompts: [
       "What changed since the last forecast submission?",
-      "Which line items moved structurally vs temporarily?",
+      "Which line items moved structurally versus temporarily?",
       "How did the updated forecast impact GOP commitment?",
       "What actions are reflected in this reforecast (not just restatement)?"
     ],
     keywords: [
-      { en:"reforecast", ja:"再予測", uses:"We submitted a reforecast based on updated pickup. / Reforecast reflects new assumptions. / Reforecast includes mitigation actions." },
-      { en:"restatement", ja:"単なる言い換え", uses:"This is not a restatement; it includes actions. / Avoid restatement without strategy. / We need action-based forecasting." },
-      { en:"commitment", ja:"コミット", uses:"We remain committed to GOP targets. / Commitment requires cost discipline. / Commitment level depends on visibility." },
-      { en:"structural", ja:"構造的", uses:"This is a structural issue, not one-time. / Identify structural cost creep. / Structural changes need long-term solutions." },
-      { en:"temporary", ja:"一時的", uses:"The impact is temporary. / Temporary costs should be separated. / Temporary effects can reverse next month." }
+      { en:"reforecast", ja:"再予測", uses:"We submitted a reforecast based on updated pickup. / Reforecast reflects new assumptions. / Reforecast includes actions." },
+      { en:"restatement", ja:"単なる置き換え", uses:"This is not a restatement; it includes actions. / Avoid restatement without strategy. / Action-based forecasting builds trust." },
+      { en:"commitment", ja:"コミット", uses:"We remain committed to GOP targets. / Commitment requires cost discipline. / Commitment depends on visibility." },
+      { en:"structural", ja:"構造的", uses:"This is structural, not one-time. / Structural cost creep needs a plan. / Structural changes take time to fix." },
+      { en:"temporary", ja:"一時的", uses:"The impact is temporary. / Temporary items should be separated. / Temporary effects may reverse next month." }
     ]
   },
   {
     title: "Labor Cost Control Without Hurting Service",
-    guide: "人件費を守りつつ、サービス品質を落とさない運用を英語で話す。",
+    guide: "人件費を抑えつつサービス品質を守るための話を英語で行う。",
     prompts: [
       "Where did labor hours exceed plan and why?",
       "What scheduling changes can improve productivity next month?",
@@ -525,13 +524,13 @@ const TOPICS = [
       { en:"productivity", ja:"生産性", uses:"Productivity improved after roster optimization. / We track productivity weekly. / Productivity is critical for margin." },
       { en:"roster", ja:"シフト表", uses:"Roster planning needs better demand signals. / We adjusted the roster to pickup. / Roster discipline prevents overspend." },
       { en:"cross-training", ja:"多能工化", uses:"Cross-training improves flexibility. / We expanded cross-training across outlets. / Cross-training reduces overtime." },
-      { en:"overtime", ja:"残業", uses:"Overtime increased due to last-minute events. / We need overtime controls. / Overtime should be exception-based." },
-      { en:"service level", ja:"サービス水準", uses:"We must maintain service level. / Service level dropped due to understaffing. / Balance service level and cost." }
+      { en:"overtime", ja:"残業", uses:"Overtime increased due to late events. / We need overtime controls. / Overtime should be exception-based." },
+      { en:"service level", ja:"サービス水準", uses:"We must maintain service level. / Service level dropped due to understaffing. / Balance service and cost." }
     ]
   },
   {
     title: "Payroll vs Profit: Managing Trade-offs",
-    guide: "Payroll投入が利益にどう効くかを部門別に説明し、改善案を話す。",
+    guide: "Payrollの投入が部門利益にどう効くか、KPIで説明する練習をする。",
     prompts: [
       "How does labor investment translate into profit by department?",
       "Where are we over-investing relative to revenue opportunity?",
@@ -539,16 +538,16 @@ const TOPICS = [
       "What changes can improve profit without increasing headcount?"
     ],
     keywords: [
-      { en:"labor investment", ja:"人件費投資", uses:"Labor investment must be tied to demand. / Investment should improve output. / We need smarter labor investment." },
-      { en:"efficiency", ja:"効率", uses:"Efficiency improved after process changes. / Efficiency varies by department. / We measure efficiency with output-based KPIs." },
+      { en:"labor investment", ja:"人件費投資", uses:"Labor investment must follow demand. / Investment should increase output. / We need smarter labor investment." },
+      { en:"efficiency", ja:"効率", uses:"Efficiency improved after process changes. / Efficiency varies by department. / Measure efficiency with output KPIs." },
       { en:"output", ja:"成果", uses:"Output per labor hour improved. / Output should justify staffing levels. / Focus on output, not just hours." },
-      { en:"headcount", ja:"人員数", uses:"Headcount is stable but hours increased. / We can reduce headcount growth with automation. / Headcount planning needs discipline." },
+      { en:"headcount", ja:"人員数", uses:"Headcount is stable but hours increased. / Avoid headcount creep with planning. / Headcount decisions should be data-driven." },
       { en:"KPI linkage", ja:"KPI連動", uses:"KPI linkage helps justify staffing. / Strengthen KPI linkage to payroll. / Use KPI linkage for planning." }
     ]
   },
   {
     title: "Guest Mix and Channel Strategy",
-    guide: "客層/チャネルのミックスが利益の質に与える影響を英語で説明する。",
+    guide: "客層/チャネルが利益の質に与える影響を英語で議論する。",
     prompts: [
       "How did guest mix change and how did it impact revenue quality?",
       "Which channels are healthiest for net revenue and why?",
@@ -557,15 +556,15 @@ const TOPICS = [
     ],
     keywords: [
       { en:"guest mix", ja:"客層ミックス", uses:"Guest mix shifted to price-sensitive segments. / Guest mix improved on weekends. / Guest mix impacts revenue quality." },
-      { en:"channel strategy", ja:"チャネル戦略", uses:"Channel strategy must protect net revenue. / We need a clearer channel strategy. / Channel strategy affects long-term positioning." },
-      { en:"direct bookings", ja:"直販", uses:"Direct bookings are healthier. / We want to grow direct bookings share. / Direct bookings reduce commission cost." },
-      { en:"rate parity", ja:"レートパリティ", uses:"Rate parity issues can harm trust. / Keep rate parity across channels. / Rate parity supports brand integrity." },
+      { en:"channel strategy", ja:"チャネル戦略", uses:"Channel strategy must protect net revenue. / We need clearer channel rules. / Channel strategy affects long-term positioning." },
+      { en:"direct bookings", ja:"直販", uses:"Direct bookings are healthier. / We want to grow direct share. / Direct reduces commission cost." },
+      { en:"rate parity", ja:"レートパリティ", uses:"Rate parity issues can harm trust. / Keep parity across channels. / Parity supports brand integrity." },
       { en:"net revenue", ja:"純売上", uses:"Net revenue declined due to commission. / Track net revenue by channel. / Net revenue is the real metric." }
     ]
   },
   {
     title: "Coupon Impact and OTA Dilution",
-    guide: "OTAクーポンの影響をADR/純売上/Rooms利益で定量的に説明する。",
+    guide: "OTAクーポンの影響を定量で説明し、統制と再設計を話す。",
     prompts: [
       "How did coupon usage trend and what drove the increase?",
       "What is the net impact on ADR and rooms profit?",
@@ -575,14 +574,14 @@ const TOPICS = [
     keywords: [
       { en:"coupon usage", ja:"クーポン利用", uses:"Coupon usage exceeded expectation. / We need limits on coupon usage. / Coupon usage drives ADR dilution." },
       { en:"ADR dilution", ja:"ADR希薄化", uses:"ADR dilution came from discounting. / We must control ADR dilution. / ADR dilution hurts rooms profit." },
-      { en:"governance", ja:"統制", uses:"We need governance for promotions. / Governance prevents uncontrolled discounting. / Strong governance protects profitability." },
-      { en:"approval process", ja:"承認プロセス", uses:"Approval process should be clear. / We tightened the approval process. / Approval process reduces risk." },
+      { en:"governance", ja:"統制", uses:"We need governance for promotions. / Governance prevents random discounting. / Strong governance protects profit." },
+      { en:"approval process", ja:"承認プロセス", uses:"Approval process should be clear. / We tightened the approval process. / Approval reduces uncontrolled offers." },
       { en:"net impact", ja:"純影響", uses:"Net impact is negative after commissions. / Always evaluate net impact. / Net impact differs by channel." }
     ]
   },
   {
     title: "Cost Containment Plan (Next Forecast Submission)",
-    guide: "次回提出でGOPマイナスを取り返すためのコスト施策を英語で話す。",
+    guide: "次回提出でGOPマイナスを取り返すコスト施策を英語で整理する。",
     prompts: [
       "Which costs have the biggest impact on GOP variance?",
       "What specific actions will you implement before next submission?",
@@ -590,8 +589,8 @@ const TOPICS = [
       "How will you ensure actions are executed and tracked?"
     ],
     keywords: [
-      { en:"cost containment", ja:"コスト抑制", uses:"Cost containment is our priority. / We launched cost containment actions. / Cost containment should not hurt core service." },
-      { en:"savings", ja:"削減効果", uses:"Expected savings are ¥X million. / Savings will be phased in. / Track savings versus baseline." },
+      { en:"cost containment", ja:"コスト抑制", uses:"Cost containment is our priority. / We launched cost containment actions. / Containment should protect core service." },
+      { en:"savings", ja:"削減効果", uses:"Expected savings are clear and quantified. / Savings will be phased in. / Track savings versus baseline." },
       { en:"timeline", ja:"実行期限", uses:"Timeline is within this month. / We need a clear timeline. / Timeline discipline matters." },
       { en:"accountability", ja:"責任所在", uses:"Assign accountability to owners. / Accountability ensures execution. / Accountability must be visible." },
       { en:"tracking", ja:"進捗管理", uses:"Tracking is done weekly. / We need better tracking. / Tracking prevents action drift." }
@@ -599,7 +598,7 @@ const TOPICS = [
   },
   {
     title: "Explaining One-time vs Structural Items",
-    guide: "一過性と構造的な収益/費用を切り分け、トレンドを正しく語る。",
+    guide: "一過性と構造的な項目を切り分け、正しいトレンドで説明する。",
     prompts: [
       "Which items are one-time and how should we normalize results?",
       "What structural issues must be addressed long-term?",
@@ -608,15 +607,15 @@ const TOPICS = [
     ],
     keywords: [
       { en:"normalize", ja:"平準化する", uses:"We normalized results for one-time items. / Normalize to see the real trend. / Normalized GOP is more meaningful." },
-      { en:"recurring", ja:"継続的", uses:"This cost is recurring. / Avoid treating recurring costs as one-time. / Recurring items require structural fixes." },
+      { en:"recurring", ja:"継続的", uses:"This cost is recurring. / Avoid treating recurring costs as one-time. / Recurring items need structural fixes." },
       { en:"root cause", ja:"根本原因", uses:"We need the root cause. / Root cause analysis prevents repeat issues. / Identify root cause quickly." },
-      { en:"trend", ja:"トレンド", uses:"Trend is distorted by one-time repairs. / Trend analysis should use normalized numbers. / Trend matters for forecasting." },
+      { en:"trend", ja:"トレンド", uses:"Trend is distorted by one-time repairs. / Trend should be normalized. / Trend matters for forecasting." },
       { en:"prevention", ja:"再発防止", uses:"Prevention requires process changes. / Prevention reduces volatility. / Prevention is better than reaction." }
     ]
   },
   {
     title: "KPI Storytelling for GM Letter",
-    guide: "GM Letter向けに、KPIで意思決定に繋がるストーリーを作る。",
+    guide: "GM Letter向けにKPIをストーリー化し、意思決定に繋げる話をする。",
     prompts: [
       "Which KPIs best explain this month’s performance?",
       "What KPI signals did we miss earlier, and why?",
@@ -624,16 +623,16 @@ const TOPICS = [
       "What KPI dashboard would help GM discussions most?"
     ],
     keywords: [
-      { en:"storytelling", ja:"ストーリー化", uses:"KPI storytelling makes insights memorable. / Use KPI storytelling for alignment. / Storytelling clarifies priorities." },
-      { en:"leading indicator", ja:"先行指標", uses:"Pickup is a leading indicator. / CPOR can be a leading indicator. / We need stronger leading indicators." },
+      { en:"storytelling", ja:"ストーリー化", uses:"KPI storytelling makes insights memorable. / Use storytelling for alignment. / Storytelling clarifies priorities." },
+      { en:"leading indicator", ja:"先行指標", uses:"Pickup is a leading indicator. / CPOR can be a leading indicator. / We need better leading indicators." },
       { en:"dashboard", ja:"ダッシュボード", uses:"Dashboard should be simple and actionable. / We need a weekly dashboard. / Dashboard reduces manual work." },
-      { en:"alignment", ja:"認識合わせ", uses:"We need alignment across hotels. / Alignment improves execution. / KPI alignment helps governance." },
+      { en:"alignment", ja:"認識合わせ", uses:"We need alignment across hotels. / Alignment improves execution. / KPI alignment supports governance." },
       { en:"actionable", ja:"実行可能", uses:"Make insights actionable. / Actionable KPIs drive behavior. / Actionable does not mean complex." }
     ]
   },
   {
     title: "Hotel Benchmarking and Target Setting (HMJ)",
-    guide: "HMJ内ベンチマークを使い、ホテルタイプとADR帯を踏まえて目標設計する。",
+    guide: "HMJ内で比較可能なベンチマークと目標値設定を英語で議論する。",
     prompts: [
       "Which hotels are best benchmarks for this property and why?",
       "What target KPIs should we set for the next quarter?",
@@ -643,14 +642,14 @@ const TOPICS = [
     keywords: [
       { en:"benchmark", ja:"ベンチマーク", uses:"Benchmark against similar hotels. / Benchmarking highlights gaps. / Benchmarking must consider context." },
       { en:"target", ja:"目標値", uses:"Set realistic targets. / Targets must be owned by teams. / Targets should be measurable." },
-      { en:"context", ja:"前提条件", uses:"Context matters for interpretation. / Without context, benchmarks mislead. / Context includes segment, location, seasonality." },
-      { en:"peer set", ja:"比較対象群", uses:"Define the peer set carefully. / Peer set should be comparable. / Peer set drives fairness." },
+      { en:"context", ja:"前提条件", uses:"Context matters for interpretation. / Without context, benchmarks mislead. / Context includes seasonality and mix." },
+      { en:"peer set", ja:"比較対象群", uses:"Define the peer set carefully. / Peer set must be comparable. / Peer set drives fairness." },
       { en:"gap", ja:"ギャップ", uses:"We identified a performance gap. / Close the gap with actions. / Gap analysis supports priorities." }
     ]
   },
   {
     title: "New Hotel Acquisition: Building a Realistic PL",
-    guide: "買収ホテルのPLを、KPIドライバーとベンチマークで現実的に作る話をする。",
+    guide: "買収時にKPIベンチを使って現実的なPLを作る考え方を英語で話す。",
     prompts: [
       "What KPI drivers do you need to build a realistic PL for a new hotel?",
       "How do you translate benchmarks into cost structure assumptions?",
@@ -659,15 +658,15 @@ const TOPICS = [
     ],
     keywords: [
       { en:"assumption", ja:"前提", uses:"Assumptions must be transparent. / Document key assumptions. / Assumptions drive the model output." },
-      { en:"benchmark translation", ja:"ベンチ→前提変換", uses:"Translate benchmarks into assumptions. / Benchmark translation needs hotel type adjustment. / Validate translation with operations." },
-      { en:"uncertainty", ja:"不確実性", uses:"Uncertainty is high early on. / We need ranges, not single points. / Uncertainty should be communicated." },
-      { en:"model limitation", ja:"モデル限界", uses:"Model limitations must be stated. / Limitations prevent misuse. / Keep limitations visible in presentations." },
-      { en:"stakeholder", ja:"関係者", uses:"Stakeholders need clarity. / Align stakeholders on assumptions. / Stakeholder alignment speeds decisions." }
+      { en:"benchmark translation", ja:"ベンチ→前提変換", uses:"Translate benchmarks into assumptions. / Adjust by hotel type and ADR band. / Validate with operations." },
+      { en:"uncertainty", ja:"不確実性", uses:"Uncertainty is high early on. / Use ranges, not single points. / Communicate uncertainty clearly." },
+      { en:"model limitation", ja:"モデル限界", uses:"Model limitations must be stated. / Limitations prevent misuse. / Keep limitations visible in decks." },
+      { en:"stakeholder", ja:"関係者", uses:"Stakeholders need clarity. / Align stakeholders on assumptions. / Alignment speeds decisions." }
     ]
   },
   {
     title: "Variance Explanation: ADR vs OCC Decomposition",
-    guide: "Rooms売上差異をRate/Volumeに分解し、施策に落とす会話をする。",
+    guide: "客室売上差異をADR要因とOCC要因に分解して英語で説明する。",
     prompts: [
       "How would you decompose rooms revenue variance into rate and volume effects?",
       "Which effect was larger this month and why?",
@@ -675,16 +674,16 @@ const TOPICS = [
       "What data quality checks are necessary before presenting results?"
     ],
     keywords: [
-      { en:"decomposition", ja:"分解", uses:"Decomposition clarifies the real drivers. / Use decomposition for rate vs volume. / Decomposition supports action planning." },
-      { en:"rate effect", ja:"価格差異", uses:"Rate effect was negative due to discounting. / Rate effect improved with better mix. / Rate effect requires pricing strategy." },
+      { en:"decomposition", ja:"分解", uses:"Decomposition clarifies the real drivers. / Use decomposition for rate versus volume. / Decomposition supports action planning." },
+      { en:"rate effect", ja:"価格差異", uses:"Rate effect was negative due to discounting. / Rate effect improved with better mix. / Rate effect needs pricing actions." },
       { en:"volume effect", ja:"数量差異", uses:"Volume effect was positive due to group pickup. / Volume effect increased variable costs. / Volume effect needs staffing controls." },
       { en:"data check", ja:"データ検証", uses:"Run data checks before analysis. / Data checks prevent misstatements. / Data checks improve trust." },
-      { en:"action planning", ja:"施策立案", uses:"Action planning must follow analysis. / Analysis without action planning is not useful. / Tie action planning to owners and dates." }
+      { en:"action planning", ja:"施策立案", uses:"Action planning must follow analysis. / Analysis without action is not enough. / Tie actions to owners and dates." }
     ]
   },
   {
     title: "Rate Strategy for Fusion Group Collaboration",
-    guide: "Fusion側とレート戦略を共通言語で議論し、合意形成する。",
+    guide: "Fusion側と共通言語でレート戦略とデータ共有を議論する練習をする。",
     prompts: [
       "What rate positioning do you want to maintain for brand perception?",
       "How do you handle OTA pressure while keeping direct growth?",
@@ -694,14 +693,14 @@ const TOPICS = [
     keywords: [
       { en:"positioning", ja:"ポジショニング", uses:"Positioning supports long-term pricing. / Keep positioning consistent. / Positioning matters in competitive markets." },
       { en:"alignment", ja:"方向性の一致", uses:"Alignment across teams is critical. / Alignment improves speed. / Alignment prevents conflicting actions." },
-      { en:"data sharing", ja:"データ共有", uses:"Data sharing improves transparency. / Agree on a data sharing cadence. / Data sharing should be standardized." },
+      { en:"data sharing", ja:"データ共有", uses:"Data sharing improves transparency. / Agree on a sharing cadence. / Standardize data definitions." },
       { en:"cadence", ja:"頻度", uses:"Set a weekly cadence. / Cadence creates rhythm. / Cadence keeps teams aligned." },
-      { en:"conflict resolution", ja:"対立解消", uses:"Conflict resolution needs clear criteria. / Use profit impact as criteria. / Resolution should be documented." }
+      { en:"conflict resolution", ja:"対立解消", uses:"Conflict resolution needs criteria. / Use profit impact as criteria. / Document decisions to avoid repeats." }
     ]
   },
   {
     title: "SOP and Finance: Making Operations Measurable",
-    guide: "SOPをKPI化して運用を測れるようにし、現場負荷を増やさず改善する。",
+    guide: "SOPをKPIに落として運用を測れるようにする話を英語で行う。",
     prompts: [
       "Which SOP steps should be tracked with KPIs and why?",
       "How do you ensure data capture is simple for hotel teams?",
@@ -710,15 +709,15 @@ const TOPICS = [
     ],
     keywords: [
       { en:"SOP compliance", ja:"SOP遵守", uses:"SOP compliance improves consistency. / Compliance needs simple tracking. / Audit compliance without blame." },
-      { en:"data capture", ja:"データ取得", uses:"Data capture should be lightweight. / Automate data capture where possible. / Bad data capture creates resistance." },
+      { en:"data capture", ja:"データ取得", uses:"Data capture should be lightweight. / Automate data capture where possible. / Poor capture creates resistance." },
       { en:"audit", ja:"監査/点検", uses:"Audit should be constructive. / Use audits to find improvements. / Audit frequency must be realistic." },
-      { en:"friction", ja:"摩擦", uses:"Reduce friction for teams. / Too much friction kills adoption. / Friction can be removed with better UX." },
+      { en:"friction", ja:"摩擦", uses:"Reduce friction for teams. / Too much friction kills adoption. / Better UX reduces friction." },
       { en:"practical insight", ja:"実務的示唆", uses:"Insights must be practical. / Practical insights drive action. / Avoid overly theoretical outputs." }
     ]
   },
   {
     title: "Automation in Reporting (Reducing Manual Work)",
-    guide: "PL/KPIレポートの自動化で非属人化し、誤提出を防ぐ話をする。",
+    guide: "PL/KPIレポートの自動化と非属人化の価値を英語で説明する。",
     prompts: [
       "Which reporting steps are most repetitive and should be automated first?",
       "How do you ensure the process is not person-dependent?",
@@ -729,13 +728,13 @@ const TOPICS = [
       { en:"automation", ja:"自動化", uses:"Automation reduces manual work. / Automation improves consistency. / Automation needs governance." },
       { en:"non-person-dependent", ja:"非属人化", uses:"We aim for a non-person-dependent process. / Remove hard-coded paths. / Standardize folder structures." },
       { en:"validation", ja:"検証", uses:"Add validation before submission. / Validation prevents errors. / Validation builds trust." },
-      { en:"exception handling", ja:"例外対応", uses:"Exception handling is required for edge cases. / Plan exception handling early. / Exceptions should be logged." },
-      { en:"stakeholder buy-in", ja:"関係者合意", uses:"Buy-in matters for adoption. / Show quick wins to get buy-in. / Align buy-in with ROI." }
+      { en:"exception handling", ja:"例外対応", uses:"Exception handling is required for edge cases. / Plan exceptions early. / Exceptions should be logged." },
+      { en:"stakeholder buy-in", ja:"関係者合意", uses:"Buy-in matters for adoption. / Show quick wins to get buy-in. / Link buy-in to ROI." }
     ]
   },
   {
     title: "Explaining KPI Definitions (Common Language)",
-    guide: "KPI定義のズレを洗い出し、共通言語として標準化する会話をする。",
+    guide: "KPI定義を揃える（共通言語化）ための会話を英語で練習する。",
     prompts: [
       "Which KPI definitions are inconsistent across hotels today?",
       "How do you document KPI definitions so everyone aligns?",
@@ -745,14 +744,14 @@ const TOPICS = [
     keywords: [
       { en:"definition", ja:"定義", uses:"Definition must be consistent. / Clarify KPI definitions. / Definition changes should be communicated clearly." },
       { en:"documentation", ja:"ドキュメント化", uses:"Documentation prevents confusion. / Keep documentation simple. / Documentation should be searchable." },
-      { en:"onboarding", ja:"教育", uses:"Onboarding needs a quick guide. / Improve onboarding with examples. / Onboarding reduces errors." },
+      { en:"onboarding", ja:"受け入れ/教育", uses:"Onboarding needs a quick guide. / Use examples for onboarding. / Onboarding reduces errors." },
       { en:"change management", ja:"変更管理", uses:"Change management prevents chaos. / Communicate changes early. / Log all changes." },
-      { en:"standardization", ja:"標準化", uses:"Standardization improves comparability. / Standardization saves time. / Avoid over-standardization where context matters." }
+      { en:"standardization", ja:"標準化", uses:"Standardization improves comparability. / Standardization saves time. / Avoid over-standardization." }
     ]
   },
   {
     title: "Owners’ Questions: Answering with Clarity",
-    guide: "オーナーの質問に、短く根拠ある英語で答える練習をする。",
+    guide: "オーナー質問に短く明確に答えるための英語表現を練習する。",
     prompts: [
       "If an owner asks 'Why is GOP below budget?', how do you answer?",
       "What supporting facts would you present without overloading details?",
@@ -760,33 +759,33 @@ const TOPICS = [
       "What is your one-sentence summary for the month?"
     ],
     keywords: [
-      { en:"one-sentence summary", ja:"一文要約", uses:"Here is the one-sentence summary. / Keep the summary crisp. / Summary should be action-oriented." },
-      { en:"supporting facts", ja:"根拠", uses:"Use supporting facts, not opinions. / Provide 2–3 key facts. / Facts should link to actions." },
+      { en:"one-sentence summary", ja:"一文要約", uses:"Here is the one-sentence summary. / Keep the summary crisp. / Make the summary action-oriented." },
+      { en:"supporting facts", ja:"根拠", uses:"Use supporting facts, not opinions. / Provide two to three key facts. / Facts should link to actions." },
       { en:"credibility", ja:"信頼性", uses:"Credibility comes from consistency. / Be transparent about risks. / Avoid overpromising." },
-      { en:"timing", ja:"タイミング", uses:"Timing of recovery is Q3. / Timing depends on market events. / Provide timing with assumptions." },
-      { en:"clarity", ja:"明瞭さ", uses:"Clarity is essential. / Avoid jargon where possible. / Use simple language." }
+      { en:"timing", ja:"タイミング", uses:"Timing of recovery is next quarter. / Timing depends on assumptions. / Provide timing with context." },
+      { en:"clarity", ja:"明瞭さ", uses:"Clarity is essential. / Avoid unnecessary jargon. / Use simple language." }
     ]
   },
   {
-    title: "Cash and Working Capital (Simple Explanation)",
-    guide: "P&Lと別にキャッシュが動く理由を、運転資本でわかりやすく説明する。",
+    title: "Cash and Working Capital (Hotel Operations View)",
+    guide: "PLとキャッシュの違いを、運転資本の観点でわかりやすく英語で話す。",
     prompts: [
-      "What items impact cash even if P&L looks stable?",
-      "How do receivables and payables affect working capital?",
-      "What operational actions improve cash in hotels?",
+      "What items impact cash even if the P&L looks stable?",
+      "How do receivables and payables affect working capital in hotels?",
+      "What operational actions improve cash without hurting service?",
       "How would you explain cash impact to non-finance teams?"
     ],
     keywords: [
       { en:"cash impact", ja:"キャッシュ影響", uses:"Cash impact differs from profit impact. / Track cash impact weekly. / Cash impact matters for stability." },
       { en:"working capital", ja:"運転資本", uses:"Working capital increased due to receivables. / Working capital control improves liquidity. / Working capital is operational." },
       { en:"receivables", ja:"売掛金", uses:"Receivables increased due to late settlements. / Reduce receivables days. / Receivables management supports cash." },
-      { en:"payables", ja:"買掛金", uses:"Payables timing affects cash. / Maintain healthy payables relationships. / Payables planning avoids surprises." },
+      { en:"payables", ja:"買掛金", uses:"Payables timing affects cash. / Maintain healthy supplier terms. / Plan payables to avoid surprises." },
       { en:"liquidity", ja:"流動性", uses:"Liquidity is stable. / Liquidity risk is low. / Liquidity requires planning." }
     ]
   },
   {
     title: "Month-End Close: Accuracy vs Speed",
-    guide: "月次締めで、精度を落とさずにスピードを上げるための会話をする。",
+    guide: "月次締めの精度とスピードを両立するための会話を英語で行う。",
     prompts: [
       "Where do month-end errors usually happen and why?",
       "How do you improve close speed without sacrificing accuracy?",
@@ -796,31 +795,31 @@ const TOPICS = [
     keywords: [
       { en:"month-end close", ja:"月次締め", uses:"Month-end close needs discipline. / Close speed improved with checklists. / Close quality drives trust." },
       { en:"accuracy", ja:"精度", uses:"Accuracy is essential for decisions. / Accuracy issues undermine credibility. / Balance accuracy and speed." },
-      { en:"checklist", ja:"チェックリスト", uses:"Checklist prevents omissions. / Use a standardized checklist. / Checklist should be short and mandatory." },
+      { en:"checklist", ja:"チェックリスト", uses:"Checklist prevents omissions. / Use a standardized checklist. / Keep the checklist short and mandatory." },
       { en:"reconciliation", ja:"照合", uses:"Reconciliation caught the issue. / Reconcile key accounts. / Reconciliation should be automated where possible." },
-      { en:"standard process", ja:"標準プロセス", uses:"Standard process reduces variation. / Build a standard process playbook. / Standardization saves time." }
+      { en:"standard process", ja:"標準プロセス", uses:"Standard process reduces variation. / Standardization saves time. / A playbook supports consistency." }
     ]
   },
   {
     title: "Explaining Forecast Accuracy (What We Got Wrong)",
-    guide: "予測が外れた理由を学びとして整理し、改善プロセスを話す。",
+    guide: "予測が外れた理由を“学び”として説明し、次の改善に繋げる話をする。",
     prompts: [
       "Which assumptions were wrong and what new data changed your view?",
       "What signals should you monitor to improve accuracy next time?",
-      "How do you separate controllable vs uncontrollable factors?",
+      "How do you separate controllable versus uncontrollable factors?",
       "What is one process change to prevent the same miss?"
     ],
     keywords: [
-      { en:"forecast miss", ja:"予測未達", uses:"We had a forecast miss due to demand shift. / Explain the miss clearly. / Use the miss to improve." },
-      { en:"signal", ja:"シグナル", uses:"Pickup is a signal. / Web traffic is a signal. / Signals help forecast accuracy." },
+      { en:"forecast miss", ja:"予測未達", uses:"We had a forecast miss due to demand shift. / Explain the miss clearly. / Use the miss to improve process." },
+      { en:"signal", ja:"シグナル", uses:"Pickup is a signal. / Web traffic can be a signal. / Signals improve forecast accuracy." },
       { en:"controllable", ja:"管理可能", uses:"Some factors are controllable. / Focus on controllable actions. / Separate controllable from uncontrollable." },
-      { en:"uncontrollable", ja:"不可抗力", uses:"Weather is uncontrollable. / Event cancellations are uncontrollable. / Uncontrollable factors need scenarios." },
-      { en:"process change", ja:"プロセス改善", uses:"We will implement a process change. / Process change improves discipline. / Keep process change simple." }
+      { en:"uncontrollable", ja:"不可抗力", uses:"Weather is uncontrollable. / Event cancellations are uncontrollable. / Use scenarios for uncontrollable factors." },
+      { en:"process change", ja:"プロセス改善", uses:"We will implement a process change. / Keep the change simple. / Process change improves discipline." }
     ]
   },
   {
     title: "Pricing Governance: Who Decides What",
-    guide: "価格決定の権限、例外、承認ルールを明確にする会話をする。",
+    guide: "価格決定の権限・ルール・例外承認を英語で整理して説明する。",
     prompts: [
       "Who has the final say on pricing decisions and why?",
       "What rules prevent over-discounting and protect margin?",
@@ -830,14 +829,14 @@ const TOPICS = [
     keywords: [
       { en:"governance", ja:"統制", uses:"Governance prevents random discounting. / Governance must be clear. / Governance supports consistency." },
       { en:"approval", ja:"承認", uses:"Approval is required for deep discounts. / Approval should be fast. / Approval records ensure transparency." },
-      { en:"rule", ja:"ルール", uses:"Rules protect margin. / Make rules simple. / Rules should be enforced consistently." },
-      { en:"exception", ja:"例外", uses:"Exceptions must be limited. / Define exceptions clearly. / Exceptions should be logged." },
-      { en:"transparency", ja:"透明性", uses:"Transparency improves trust. / Transparency requires documentation. / Transparent decisions reduce conflict." }
+      { en:"rule", ja:"ルール", uses:"Rules protect margin. / Make rules simple. / Enforce rules consistently." },
+      { en:"exception", ja:"例外", uses:"Exceptions must be limited. / Define exceptions clearly. / Log exceptions for review." },
+      { en:"transparency", ja:"透明性", uses:"Transparency improves trust. / Documentation creates transparency. / Transparent decisions reduce conflict." }
     ]
   },
   {
     title: "Competitive Set and Market Share Discussion",
-    guide: "競合状況と市場シェアを整理し、価格競争を避ける打ち手を話す。",
+    guide: "競合状況と市場シェアの変化を、価格競争を避けつつ英語で議論する。",
     prompts: [
       "What changed in the competitive set this month?",
       "How did competitors price relative to you and why?",
@@ -846,15 +845,15 @@ const TOPICS = [
     ],
     keywords: [
       { en:"competitive set", ja:"競合群", uses:"Competitive set pricing shifted down. / Monitor the competitive set daily. / Competitive set changes require strategy." },
-      { en:"market share", ja:"市場シェア", uses:"Market share declined in weekdays. / Market share improved after repositioning. / Market share is not everything—profit matters." },
+      { en:"market share", ja:"市場シェア", uses:"Market share declined on weekdays. / Market share improved after repositioning. / Profit matters more than share." },
       { en:"price war", ja:"価格競争", uses:"Avoid a price war. / Price war destroys value. / Compete on value, not only price." },
-      { en:"positioning", ja:"立ち位置", uses:"Positioning must be consistent. / Improve positioning through product value. / Positioning supports rate." },
+      { en:"positioning", ja:"立ち位置", uses:"Positioning must be consistent. / Positioning supports pricing power. / Improve positioning with product value." },
       { en:"value proposition", ja:"価値提案", uses:"Value proposition justifies price. / Clarify the value proposition. / Value proposition beats discounting long-term." }
     ]
   },
   {
     title: "Quality of Revenue: Net vs Gross Thinking",
-    guide: "グロスではなくネット（手数料控除後）で判断する癖をつける会話をする。",
+    guide: "総売上ではなくネット（手数料控除後）で見る考え方を英語で説明する。",
     prompts: [
       "How do you compare net revenue across channels?",
       "Which bookings look good on paper but are weak after costs?",
@@ -862,16 +861,16 @@ const TOPICS = [
       "What metrics should we show weekly to prevent dilution?"
     ],
     keywords: [
-      { en:"gross vs net", ja:"グロス/ネット", uses:"Gross looks good but net is weak. / Always check net. / Net reflects reality." },
+      { en:"gross vs net", ja:"グロス/ネット", uses:"Gross looks good but net is weak. / Always check net results. / Net reflects true profitability." },
       { en:"contribution margin", ja:"限界利益", uses:"Contribution margin differs by channel. / Protect contribution margin. / Contribution margin drives decisions." },
       { en:"distribution cost", ja:"流通コスト", uses:"Distribution cost is rising. / Reduce distribution cost with direct growth. / Track distribution cost per booking." },
-      { en:"revenue quality", ja:"売上の質", uses:"Revenue quality deteriorated. / Focus on quality, not just quantity. / Improve quality via mix." },
-      { en:"dilution", ja:"希薄化", uses:"Dilution came from heavy promotions. / Prevent dilution with rules. / Dilution hurts long-term ADR." }
+      { en:"revenue quality", ja:"売上の質", uses:"Revenue quality deteriorated due to mix. / Focus on quality, not only quantity. / Improve quality through channel rules." },
+      { en:"dilution", ja:"希薄化", uses:"Dilution came from heavy promotions. / Prevent dilution with governance. / Dilution hurts long-term ADR." }
     ]
   },
   {
     title: "Guest Experience vs Cost: Finding the Line",
-    guide: "コスト削減とゲスト体験の境界線を、基準とデータで説明する。",
+    guide: "コスト削減とゲスト体験のトレードオフを、客観的に英語で話す。",
     prompts: [
       "Which cost cuts are safe and which risk guest dissatisfaction?",
       "How do you evaluate trade-offs objectively?",
@@ -880,32 +879,32 @@ const TOPICS = [
     ],
     keywords: [
       { en:"trade-off", ja:"トレードオフ", uses:"We need a smart trade-off. / Trade-offs should be data-driven. / Avoid false trade-offs." },
-      { en:"service standard", ja:"サービス基準", uses:"Service standards must be protected. / Define minimum standards. / Standards should be consistent." },
-      { en:"guest feedback", ja:"顧客フィードバック", uses:"Guest feedback stayed stable. / Feedback worsened after staffing cuts. / Monitor feedback weekly." },
-      { en:"NPS", ja:"推奨度指標", uses:"NPS dropped slightly. / NPS is a useful signal. / NPS must be interpreted with context." },
+      { en:"service standard", ja:"サービス基準", uses:"Service standards must be protected. / Define minimum standards. / Keep standards consistent." },
+      { en:"guest feedback", ja:"顧客フィードバック", uses:"Guest feedback stayed stable. / Feedback worsened after changes. / Monitor feedback weekly." },
+      { en:"NPS", ja:"推奨度指標", uses:"NPS dropped slightly. / NPS is a useful signal. / Interpret NPS with context." },
       { en:"cost-safe", ja:"安全な削減", uses:"This is a cost-safe change. / Cost-safe actions are preferred. / Not all savings are cost-safe." }
     ]
   },
   {
     title: "Explaining Data Issues and Corrections",
-    guide: "データ不備の説明を、原因・影響範囲・再発防止で整理して話す。",
+    guide: "データ不備の説明、影響範囲、再発防止を英語で明確に話す。",
     prompts: [
       "What was wrong with the data and how was it discovered?",
-      "What correction did you make and what lines were impacted?",
+      "What correction did you make and which lines were impacted?",
       "How do you prevent the same issue in the next cycle?",
       "How do you communicate the correction without losing trust?"
     ],
     keywords: [
-      { en:"data issue", ja:"データ不備", uses:"We identified a data issue. / Data issue impacted KPIs. / We corrected the data issue promptly." },
+      { en:"data issue", ja:"データ不備", uses:"We identified a data issue. / The issue impacted KPIs. / We corrected it promptly." },
       { en:"correction", ja:"修正", uses:"Correction was applied to the report. / We documented the correction. / Correction improved accuracy." },
-      { en:"root cause", ja:"根本原因", uses:"Root cause was a mapping error. / Root cause analysis is completed. / Address root cause, not symptoms." },
+      { en:"root cause", ja:"根本原因", uses:"Root cause was a mapping error. / Root cause analysis is complete. / Fix root cause, not symptoms." },
       { en:"prevention", ja:"再発防止", uses:"Prevention includes validation checks. / Prevention requires process changes. / Prevention is now in place." },
       { en:"trust", ja:"信頼", uses:"Trust depends on transparency. / Protect trust with clear communication. / Trust improves with consistency." }
     ]
   },
   {
     title: "Meeting with International Team (Fusion): Clear Updates",
-    guide: "国際チームへ、短く明確に今週の状況と依頼事項を伝える練習をする。",
+    guide: "国際チームへ短く明確にアップデートし、必要支援と次アクションを伝える。",
     prompts: [
       "What is your concise update for this week’s performance?",
       "What support do you need from the international team?",
@@ -914,80 +913,149 @@ const TOPICS = [
     ],
     keywords: [
       { en:"concise update", ja:"簡潔な報告", uses:"Here is a concise update. / Keep it short and clear. / Concise updates save time." },
-      { en:"decision", ja:"意思決定", uses:"We need a decision on promotions. / Decision owner is unclear. / Decision timeline is this week." },
+      { en:"decision", ja:"意思決定", uses:"We need a decision on promotions. / The decision owner is unclear. / The decision timeline is this week." },
       { en:"support", ja:"支援", uses:"We need support on data access. / Support is needed for alignment. / Support will speed execution." },
       { en:"next steps", ja:"次のステップ", uses:"Next steps are defined. / Confirm next steps and owners. / Next steps must be tracked." },
       { en:"deadline", ja:"締切", uses:"Deadline is Friday. / Set a realistic deadline. / Deadline discipline matters." }
     ]
   },
 
-  /* ---- ここから追加（30個に到達させる） ---- */
+  /* ====== ここから追加（23〜30） ====== */
+
   {
-    title: "Utilities Optimization: Usage vs Rate vs Weather",
-    guide: "Utilitiesの差異を、使用量・単価・天候の3点で整理して話す。",
+    title: "Utilities Optimization: Consumption, Tariff, and Controls",
+    guide: "Utilitiesの増減を消費量・単価・運用で分解し、対策を英語で話す。",
     prompts: [
-      "Is the utilities variance driven by usage, tariff rates, or weather factors?",
-      "What operational changes can reduce consumption without guest impact?",
-      "How do you validate meter data and avoid reporting noise?",
-      "What is your monthly forecast approach for utilities going forward?"
+      "Is the utilities variance driven by consumption, tariff, or operating hours?",
+      "Which areas (HVAC, laundry, kitchen) are the biggest drivers and why?",
+      "What quick controls can you implement within two weeks?",
+      "How will you track savings and avoid rebound next month?"
     ],
     keywords: [
-      { en:"consumption", ja:"使用量", uses:"Consumption increased due to higher load. / We reduced consumption through optimization. / Track consumption by major equipment." },
-      { en:"tariff", ja:"料金単価", uses:"Tariff increases drove part of the variance. / Tariff changes should be flagged early. / We need a tariff assumption in forecast." },
-      { en:"weather normalization", ja:"天候補正", uses:"Weather normalization explains part of the gap. / Normalize for unusual temperatures. / Weather effects are seasonal." },
-      { en:"meter validation", ja:"メーター検証", uses:"Meter validation prevents wrong conclusions. / We cross-checked meter readings. / Validation is required before escalation." },
-      { en:"energy saving", ja:"省エネ", uses:"Energy saving actions are prioritized. / Savings should be measurable. / Energy saving must not hurt comfort." }
+      { en:"consumption", ja:"使用量", uses:"Consumption increased due to longer operating hours. / We need to reduce consumption without comfort loss. / Consumption should be normalized for weather." },
+      { en:"tariff", ja:"単価（料金）", uses:"Tariff increased after the contract update. / Tariff risk needs monitoring. / Tariff changes must be reflected in forecast." },
+      { en:"HVAC", ja:"空調", uses:"HVAC is the largest driver in summer. / HVAC setpoints were adjusted. / HVAC scheduling can reduce peak load." },
+      { en:"load management", ja:"負荷管理", uses:"Load management reduces peak costs. / We will shift load where possible. / Load management needs clear SOPs." },
+      { en:"measurement plan", ja:"測定計画", uses:"We created a measurement plan for savings. / Measurement plan includes baseline and targets. / Measurement plan builds credibility." }
     ]
   },
   {
-    title: "POM Deep Dive: OPEX Repairs vs Planned Maintenance",
-    guide: "POMを修繕（OPEX）と計画保全に分け、再発防止を話す。",
+    title: "POM Prioritization: Reactive vs Preventive Spend",
+    guide: "POMを応急修繕と予防保全に分け、優先順位と再発防止を英語で話す。",
     prompts: [
-      "Which POM costs are reactive repairs versus planned maintenance?",
-      "What is the root cause behind repeated breakdowns?",
-      "How do you prioritize maintenance within budget constraints?",
-      "What KPIs would you use to track maintenance effectiveness?"
+      "How much of POM spend was reactive versus preventive this month?",
+      "Which failures are repeating and what is the underlying cause?",
+      "What preventive plan would reduce cost volatility over 90 days?",
+      "How do you communicate POM priorities to non-technical stakeholders?"
     ],
     keywords: [
-      { en:"reactive repair", ja:"突発修繕", uses:"Reactive repairs increased unexpectedly. / Reactive repair work disrupts operations. / We need to reduce reactive repairs." },
-      { en:"planned maintenance", ja:"計画保全", uses:"Planned maintenance stabilizes cost. / We need a planned maintenance calendar. / Planned maintenance reduces downtime." },
-      { en:"downtime", ja:"停止時間", uses:"Downtime impacted guest satisfaction. / Downtime should be minimized. / Track downtime by asset category." },
-      { en:"asset lifecycle", ja:"資産ライフサイクル", uses:"Asset lifecycle planning supports budgeting. / Lifecycle costs must be considered. / We need a lifecycle replacement plan." },
-      { en:"prevent recurrence", ja:"再発防止", uses:"We implemented steps to prevent recurrence. / Recurrence prevention is a priority. / Prevent recurrence through SOP and checks." }
+      { en:"reactive repair", ja:"応急修繕", uses:"Reactive repairs spiked after equipment failure. / Reactive repairs are costly and disruptive. / We need to reduce reactive repairs." },
+      { en:"preventive plan", ja:"予防計画", uses:"A preventive plan stabilizes costs. / The plan focuses on high-risk assets. / The plan must be scheduled and tracked." },
+      { en:"recurrence", ja:"再発", uses:"Recurrence indicates weak root-cause fixes. / Recurrence must be documented. / Reduce recurrence with standard parts and SOP." },
+      { en:"asset criticality", ja:"重要度評価", uses:"Asset criticality guides priorities. / High-criticality assets get first attention. / Criticality helps justify budget." },
+      { en:"cost volatility", ja:"コスト変動", uses:"Cost volatility makes forecasting difficult. / Reduce volatility with preventive maintenance. / Volatility should be explained clearly." }
     ]
   },
   {
-    title: "Payroll Forecasting: Hours, Wage Rate, and Mix",
-    guide: "PayrollをHours・時給単価・雇用形態ミックスで分解して話す。",
+    title: "OTA Commission Reconciliation and Net Revenue Control",
+    guide: "OTA手数料の精算・差異・漏れを点検し、ネット売上で管理する話をする。",
     prompts: [
-      "Is payroll variance driven by hours, wage rate, or staffing mix?",
-      "Which departments have the largest controllable opportunities?",
-      "How do you link demand signals to roster planning weekly?",
-      "What is your action plan to improve payroll accuracy next month?"
+      "How do you reconcile OTA commissions and identify discrepancies?",
+      "Which bookings have the highest distribution cost and why?",
+      "What controls prevent commission leakage or misclassification?",
+      "How do you report channel performance using net metrics?"
     ],
     keywords: [
-      { en:"labor hours", ja:"労働時間", uses:"Labor hours exceeded plan in F&B. / Hours should flex with volume. / Track hours per output KPI." },
-      { en:"wage rate", ja:"賃金単価", uses:"Wage rate increased due to overtime premium. / Wage rate assumptions must be updated. / Control premium pay where possible." },
-      { en:"staffing mix", ja:"雇用形態ミックス", uses:"Staffing mix shifted to more contractors. / Mix changes affect cost stability. / Optimize mix for both cost and quality." },
-      { en:"roster accuracy", ja:"シフト精度", uses:"Roster accuracy improved with better forecasts. / Accuracy reduces overstaffing. / We need a weekly roster review." },
-      { en:"labor KPI", ja:"人件費KPI", uses:"Use covers per labor hour. / Track rooms cleaned per labor hour. / Labor KPIs support accountability." }
+      { en:"reconciliation", ja:"照合", uses:"We completed reconciliation for OTA invoices. / Reconciliation identified discrepancies. / Reconciliation prevents leakage." },
+      { en:"discrepancy", ja:"差異", uses:"We found a discrepancy in commission rates. / Discrepancies must be escalated quickly. / Discrepancy impact was quantified." },
+      { en:"distribution cost", ja:"流通コスト", uses:"Distribution cost is higher on certain OTAs. / Track distribution cost per booking. / Reduce distribution cost via direct growth." },
+      { en:"commission leakage", ja:"手数料漏れ", uses:"Commission leakage occurs through wrong mapping. / Leakage can be prevented with checks. / Leakage directly hurts net revenue." },
+      { en:"net revenue view", ja:"ネット売上視点", uses:"Net revenue view changes channel priorities. / Use net metrics for decision-making. / Net revenue view improves profit quality." }
     ]
   },
   {
-    title: "GM Letter: Turning Numbers into Executive Narrative",
-    guide: "GM Letter向けに、数字→含意→アクションの順で短く語る練習をする。",
+    title: "Forecast Submission Quality: Controls and Review Cadence",
+    guide: "Forecast提出の品質を上げるためのレビュー手順と統制を英語で話す。",
     prompts: [
-      "What are the three key messages you want the GM to remember?",
-      "Which metrics support each message without overloading details?",
-      "What actions are already underway and who owns them?",
-      "What is the single biggest risk to next month’s outlook?"
+      "What are the most common errors before forecast submission?",
+      "Which checks should be mandatory (logic, mapping, outliers) and why?",
+      "What review cadence ensures speed without sacrificing quality?",
+      "How do you document changes so teams can trace the logic?"
     ],
     keywords: [
-      { en:"key message", ja:"要点", uses:"The key message is margin pressure from ADR. / Keep the key message consistent. / Lead with the key message." },
-      { en:"executive narrative", ja:"経営向けストーリー", uses:"Build an executive narrative from KPIs. / Narrative should be action-oriented. / Narrative must be consistent across teams." },
-      { en:"ownership", ja:"オーナー設定", uses:"Ownership is assigned to department heads. / Ownership must be visible. / Lack of ownership delays execution." },
-      { en:"risk statement", ja:"リスク記述", uses:"Our risk statement is demand softness. / Risks should be specific and measurable. / Update risks as signals change." },
-      { en:"next action", ja:"次の一手", uses:"Next action is to tighten OTA governance. / Next actions must be time-bound. / Next actions should be tracked weekly." }
+      { en:"submission quality", ja:"提出品質", uses:"Submission quality improved with standard checks. / Quality issues undermine credibility. / Quality must be consistent across hotels." },
+      { en:"outlier check", ja:"外れ値チェック", uses:"Outlier checks flagged unusual CPOR. / Outlier checks should be automated. / Outlier checks reduce rework." },
+      { en:"review cadence", ja:"レビュー頻度", uses:"We set a weekly review cadence. / Cadence improves alignment. / Cadence prevents last-minute surprises." },
+      { en:"change log", ja:"変更ログ", uses:"We keep a change log for transparency. / Change log helps trace logic. / Change log reduces confusion." },
+      { en:"sign-off", ja:"承認（サインオフ）", uses:"Sign-off is required for key assumptions. / Sign-off must be timely. / Sign-off clarifies accountability." }
+    ]
+  },
+  {
+    title: "KPI Dashboard Adoption: Making It Actually Used",
+    guide: "KPIダッシュボードを“使われる形”にするための設計と運用を英語で話す。",
+    prompts: [
+      "What is the single job-to-be-done for the KPI dashboard?",
+      "Which KPIs must be on the first screen and why?",
+      "How do you reduce friction for hotel teams to use it weekly?",
+      "What feedback loop will you run to improve adoption?"
+    ],
+    keywords: [
+      { en:"adoption", ja:"定着", uses:"Adoption improves when the dashboard is simple. / Adoption requires training and rhythm. / Adoption should be measured." },
+      { en:"first screen", ja:"初期画面", uses:"First screen should show only critical KPIs. / First screen must be readable on mobile. / First screen drives habit." },
+      { en:"frictionless", ja:"摩擦が少ない", uses:"Make the workflow frictionless for users. / Frictionless design increases usage. / Remove steps that add friction." },
+      { en:"weekly rhythm", ja:"週次リズム", uses:"Weekly rhythm creates routine. / Rhythm supports accountability. / Rhythm keeps teams aligned." },
+      { en:"feedback loop", ja:"改善ループ", uses:"We run a feedback loop with users. / Feedback loop drives continuous improvement. / Feedback loop should be fast." }
+    ]
+  },
+  {
+    title: "Acquisition Due Diligence: What Finance Must Ask",
+    guide: "買収DDで財務が必ず確認すべき論点を、英語で質問できるようにする。",
+    prompts: [
+      "What financial risks would you prioritize in due diligence and why?",
+      "Which KPIs do you need to validate the operating assumptions?",
+      "What one-time items should be normalized to assess true earning power?",
+      "How do you summarize DD findings for executives in three bullets?"
+    ],
+    keywords: [
+      { en:"due diligence", ja:"デューデリジェンス", uses:"Due diligence focuses on risks and proof. / Due diligence requires clean data. / Due diligence must be time-boxed." },
+      { en:"earning power", ja:"稼ぐ力", uses:"We assessed true earning power after normalization. / Earning power depends on mix and cost structure. / Earning power should be stress-tested." },
+      { en:"normalization", ja:"平準化", uses:"Normalization removes one-time noise. / Normalization improves comparability. / Normalization must be documented." },
+      { en:"risk register", ja:"リスク一覧", uses:"We created a risk register. / Risk register prioritizes impact and likelihood. / Risk register supports executive decisions." },
+      { en:"stress test", ja:"ストレステスト", uses:"We stress-tested ADR and occupancy scenarios. / Stress test highlights downside exposure. / Stress test improves confidence." }
+    ]
+  },
+  {
+    title: "Fusion Data Sharing: KPIs, SOPs, and Governance",
+    guide: "Fusionと資料・KPI・SOPを共有する際のルールと運用を英語で合意する。",
+    prompts: [
+      "What data should we share weekly versus monthly, and why?",
+      "How do we align KPI definitions to avoid misinterpretation?",
+      "What access controls and version rules prevent confusion?",
+      "How do we escalate issues and decide owners across teams?"
+    ],
+    keywords: [
+      { en:"data cadence", ja:"共有頻度", uses:"We agreed on a weekly data cadence. / Cadence reduces ad-hoc requests. / Cadence supports planning." },
+      { en:"version control", ja:"版管理", uses:"Version control prevents outdated files. / Use clear naming and timestamps. / Version control supports auditability." },
+      { en:"access control", ja:"アクセス管理", uses:"Access control protects sensitive files. / Control access by role. / Access control reduces risk." },
+      { en:"KPI alignment", ja:"KPI定義の一致", uses:"KPI alignment avoids confusion. / Alignment requires a shared glossary. / Alignment improves speed." },
+      { en:"escalation path", ja:"エスカレーション", uses:"We defined an escalation path. / Escalation path clarifies owners. / Escalation prevents delays." }
+    ]
+  },
+  {
+    title: "Flow-Through Drilldown: From PL Blocks to Actions",
+    guide: "PLブロック別にFlow-through悪化を掘り下げ、打ち手へ落とす練習をする。",
+    prompts: [
+      "Which PL block drove the flow-through gap the most, and why?",
+      "Is the issue cost rate, volume-driven variable cost, or fixed cost creep?",
+      "What two actions would you implement immediately, and what is the expected impact?",
+      "What metrics will you monitor to confirm improvement within two weeks?"
+    ],
+    keywords: [
+      { en:"drilldown", ja:"掘り下げ", uses:"We need a drilldown by PL block. / Drilldown clarifies the true driver. / Drilldown should end with actions." },
+      { en:"fixed cost creep", ja:"固定費のじわ増え", uses:"Fixed cost creep reduces leverage. / Creep must be identified early. / Stop creep with governance and reviews." },
+      { en:"cost rate", ja:"コスト率", uses:"Cost rate increased despite stable revenue. / Track cost rate by department. / Cost rate changes need explanation." },
+      { en:"expected impact", ja:"期待効果", uses:"Expected impact is quantified in yen. / Impact should be realistic and time-bound. / Impact should be tracked weekly." },
+      { en:"two-week signal", ja:"2週間で見る指標", uses:"Two-week signals include CPOR and overtime. / Signals must be simple. / Two-week signals prevent late reactions." }
     ]
   }
 ];
@@ -1042,9 +1110,6 @@ function getManualTopicIndex(){
 function setManualTopicIndex(idx){
   localStorage.setItem(manualTopicKey(), String(idx));
 }
-function clearManualTopicIndex(){
-  localStorage.removeItem(manualTopicKey());
-}
 function currentTopicIndex(){
   const m = getManualTopicIndex();
   return (m === null) ? autoTopicIndex() : m;
@@ -1064,14 +1129,15 @@ function markUsedToday(){
 
 /* =========================
    Topic Select 初期化
+   - 表示は Topic No. のみ（タイトル無し）
    ========================= */
 function initTopicSelect(){
   const sel = document.getElementById("topicSelect");
   sel.innerHTML = "";
-  TOPICS.forEach((t, i) => {
+  TOPICS.forEach((_, i) => {
     const opt = document.createElement("option");
     opt.value = String(i);
-    opt.textContent = `Topic ${i+1}: ${t.title}`;
+    opt.textContent = `Topic ${i+1}`;
     sel.appendChild(opt);
   });
   sel.addEventListener("change", () => {
@@ -1215,7 +1281,6 @@ function switchTab(num){
 
 /* =========================
    Midnight auto-refresh
-   日付が変わったら Topic/状態 表示更新（手動選択は当日分のみ）
    ========================= */
 function scheduleMidnightRefresh(){
   const now = new Date();
@@ -1223,7 +1288,6 @@ function scheduleMidnightRefresh(){
   next.setHours(24,0,1,0); // 00:00:01
   const ms = next.getTime() - now.getTime();
   setTimeout(() => {
-    // 新しい日付になったので、手動選択（前日分）は自然に無効化（キーが変わるため）
     renderToday();
     toast("日付が変わったのでTopicを更新しました");
     scheduleMidnightRefresh();
@@ -1234,11 +1298,6 @@ function scheduleMidnightRefresh(){
    Events
    ========================= */
 window.addEventListener("load", () => {
-  if (!Array.isArray(TOPICS) || TOPICS.length !== 30){
-    // 安全策：30固定前提のため、ここは壊さない（本来到達しない）
-    console.warn("TOPICS length is expected to be 30.");
-  }
-
   initTopicSelect();
   renderToday();
   scheduleMidnightRefresh();
