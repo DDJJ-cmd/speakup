@@ -1,33 +1,25 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-
-  <!-- iPhone向け -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="SpeakUp">
-
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icons/icon-180.png">
-  <meta name="theme-color" content="#0b1220">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SpeakUp</title>
-
   <style>
     body {
-      font-family: -apple-system, sans-serif;
+      font-family: -apple-system, system-ui, sans-serif;
       background: #0b1220;
       color: #e9eefc;
       margin: 0;
-      padding: 0 0 80px 0;
+      padding: 0 0 88px 0;
     }
     header {
       padding: 18px 14px;
       background: rgba(11,18,32,.9);
       border-bottom: 1px solid rgba(255,255,255,.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(10px);
     }
     h1 { margin: 0; font-size: 18px; }
     .sub { margin-top: 6px; color: #a9b5d6; font-size: 12px; }
@@ -54,7 +46,8 @@
     .muted { color: #a9b5d6; }
     .small { font-size: 12px; }
     ul { margin: 8px 0; padding-left: 20px; }
-    li { margin: 6px 0; }
+    li { margin: 6px 0; cursor: default; }
+    .kw-item { cursor: pointer; }
     .btn {
       width: 100%;
       padding: 14px;
@@ -65,6 +58,7 @@
       font-size: 16px;
       font-weight: bold;
       margin: 8px 0;
+      cursor: pointer;
     }
     .btn-sec {
       background: rgba(255,255,255,.04);
@@ -73,38 +67,40 @@
     }
     textarea {
       width: 100%;
-      height: 160px;
+      height: 180px;
       padding: 12px;
       background: rgba(0,0,0,.3);
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 12px;
       color: #fff;
       font-size: 12px;
-      font-family: monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      box-sizing: border-box;
     }
     nav {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(11,18,32,.9);
+      background: rgba(11,18,32,.92);
       border-top: 1px solid rgba(255,255,255,.1);
       display: flex;
       padding: 10px 14px;
-      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      gap: 6px;
+      backdrop-filter: blur(10px);
     }
     nav button {
       flex: 1;
       padding: 10px;
-      margin: 0 3px;
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 12px;
       background: rgba(255,255,255,.03);
       color: #a9b5d6;
       font-size: 13px;
+      cursor: pointer;
     }
     nav button.active {
-      background: rgba(110,231,255,.1);
+      background: rgba(110,231,255,.12);
       color: #fff;
     }
     .hide { display: none; }
@@ -119,122 +115,193 @@
       border-radius: 12px;
       font-size: 13px;
       opacity: 0;
+      pointer-events: none;
       transition: opacity 0.2s;
       z-index: 999;
     }
     .toast.show { opacity: 1; }
-    a.btn { display:block; text-align:center; text-decoration:none; }
+    pre {
+      margin: 0;
+    }
   </style>
 </head>
-<body>
 
+<body>
 <header>
   <h1>SpeakUp</h1>
-  <div class="sub">毎日20:00：未使用なら通知 → ChatGPTで英会話</div>
+  <div class="sub">毎日20:00：未使用なら通知 → ChatGPTで英会話（PWA化もOK）</div>
 </header>
 
 <main>
+  <!-- TODAY -->
   <section id="viewToday">
     <div class="row">
       <span class="pill" id="dateDisplay">----</span>
-      <span class="pill" id="statusDisplay">状態：未利用</span>
+      <span class="pill" id="statusDisplay">状態：--</span>
     </div>
 
     <div class="card">
-      <h2 id="topicTitle">---</h2>
-      <div class="muted small" id="topicGuide">---</div>
+      <h2 id="topicTitle">Loading...</h2>
+      <div class="muted small" id="topicGuide">Loading guide...</div>
 
       <h3>Prompts（順番に聞く）</h3>
-      <ul id="promptList"></ul>
+      <ul id="promptsList"></ul>
 
       <h3>Keywords（タップで復習）</h3>
-      <ul id="keywordList"></ul>
+      <ul id="keywordsList"></ul>
 
-      <div id="speakUpBtnContainer"></div>
+      <button class="btn" id="btnSpeakUp">Let's speak up!</button>
+
       <div class="small muted" style="margin-top:8px;">
-        押すと：お題→キーワード→ChatGPTを開いて会話開始（& 今日開いたフラグを記録）
+        押すと：お題→キーワード→ChatGPTを開いて会話開始（& 今日開いたフラグ＋履歴を保存）
       </div>
     </div>
 
     <div class="card">
       <h2>Notes保存用（いつでも復習）</h2>
-      <div class="small muted">
-        ショートカット「SpeakUp_SaveToNotes」を作ればワンタップ保存できます。
-      </div>
+      <div class="small muted">※「コピー」→メモに貼り付け。ショートカット連携は後でOK。</div>
       <div style="margin-top:10px;">
         <textarea id="notesArea"></textarea>
       </div>
-      <button class="btn btn-sec" onclick="copyNotes()">コピー</button>
+      <button class="btn btn-sec" id="btnCopyNotes">コピー</button>
     </div>
 
     <div class="card">
       <h2>動作確認用ボタン</h2>
-      <button class="btn btn-sec" onclick="testOpened()">今日開いたを記録（テスト）</button>
-      <button class="btn btn-sec" onclick="testShortcut()">ショートカットテスト</button>
+      <button class="btn btn-sec" id="btnTestOpened">今日開いたを記録（テスト）</button>
+      <button class="btn btn-sec" id="btnClearOpened">今日開いたを解除（テスト）</button>
     </div>
   </section>
 
+  <!-- HISTORY -->
   <section id="viewHistory" class="hide">
     <div class="card">
       <h2>History（復習）</h2>
-      <div class="small muted">Let's speak up! を押した日の記録を保存します。</div>
+      <div class="small muted">"Let's speak up!" を押した日の記録（最大20件）</div>
       <div style="height:1px; background:rgba(255,255,255,.1); margin:12px 0;"></div>
-      <div id="historyContent" class="small muted">
-        まだ履歴がありません。Todayで "Let's speak up!" を押すと記録されます。
-      </div>
+      <div id="historyContent" class="small muted">読み込み中...</div>
     </div>
     <div class="card">
-      <button class="btn btn-sec" onclick="clearAllHistory()">履歴を全削除</button>
+      <button class="btn btn-sec" id="btnClearAllHistory">履歴を全削除</button>
     </div>
   </section>
 
+  <!-- SETTINGS -->
   <section id="viewSettings" class="hide">
     <div class="card">
       <h2>Settings</h2>
       <h3>デバッグログ</h3>
-      <pre id="logArea" style="font-family:monospace; font-size:11px; color:#a9b5d6; white-space:pre-wrap; margin:10px 0;">起動しました
+      <pre id="logArea" style="font-family:ui-monospace,monospace; font-size:11px; color:#a9b5d6; white-space:pre-wrap; margin:10px 0;">起動しました
 </pre>
+      <div class="small muted">
+        ※GitHub Pages で動かしている間は、PWA用ファイル（manifest / icons / sw.js）は後で追加でOK。
+      </div>
     </div>
   </section>
 </main>
 
 <nav>
-  <button id="tab1" class="active" onclick="switchTab(1)">Today</button>
-  <button id="tab2" onclick="switchTab(2)">History</button>
-  <button id="tab3" onclick="switchTab(3)">Settings</button>
+  <button id="tab1" class="active">Today</button>
+  <button id="tab2">History</button>
+  <button id="tab3">Settings</button>
 </nav>
 
 <div class="toast" id="toastMsg"></div>
 
 <script>
-// ---- Topics（あなたの配列をそのまま貼る：省略せずに入れてOK）----
+/* =========================
+   1) Topics
+========================= */
 var topics = [
-  // ここにあなたのtopics配列をそのまま貼ってOK
-  // （長いので、今の内容をコピペで置き換えてください）
+  {
+    title: "Introducing HIP Concept to International Teams",
+    guide: "HIP構想を海外メンバーへ説明する想定の練習",
+    prompts: [
+      "How would you explain the HIP concept to a hotel operator?",
+      "What business problem does HIP try to solve?",
+      "How can automation improve hotel decision making?",
+      "What makes HIP different from a traditional report?"
+    ],
+    keywords: [
+      { en: "automation", ja: "自動化", uses: "We focus on automation. / Automation reduces manual work. / Automation helps consistency." },
+      { en: "data integration", ja: "データ統合", uses: "Data integration is essential. / We need better data integration. / Integration improves visibility." },
+      { en: "workflow", ja: "業務フロー", uses: "Let's redesign the workflow. / Workflow affects efficiency. / This workflow is simple." },
+      { en: "insight", ja: "洞察", uses: "The system gives insight. / Insight drives strategy. / We need actionable insight." },
+      { en: "dashboard", ja: "ダッシュボード", uses: "Check the dashboard daily. / Dashboard shows KPI. / We update the dashboard." }
+    ]
+  },
+  {
+    title: "Discussing ADR Strategy with Fusion Hotels",
+    guide: "ADR戦略について海外ホテルと議論する会話",
+    prompts: [
+      "What factors influence ADR in your market?",
+      "How do you balance ADR and occupancy?",
+      "What pricing strategy works best in Vietnam?",
+      "How do OTAs affect ADR performance?"
+    ],
+    keywords: [
+      { en: "ADR", ja: "平均客室単価", uses: "ADR increased this month. / ADR impacts profit. / We monitor ADR daily." },
+      { en: "pricing strategy", ja: "価格戦略", uses: "We adjust pricing strategy. / Strategy depends on demand. / Pricing strategy is flexible." },
+      { en: "demand", ja: "需要", uses: "Demand is growing. / We forecast demand. / Demand changes seasonally." },
+      { en: "OTA", ja: "オンライン旅行代理店", uses: "OTA costs are rising. / OTA drives volume. / OTA strategy matters." },
+      { en: "rate mix", ja: "料金構成", uses: "Rate mix changed. / Mix affects revenue. / Analyze rate mix monthly." }
+    ]
+  },
+  {
+    title: "Explaining Flow-Through Performance",
+    guide: "Flow Throughを海外メンバーへ説明する練習",
+    prompts: [
+      "How do you define flow-through in your hotel?",
+      "Why is flow-through important for profitability?",
+      "What causes low flow-through?",
+      "How can teams improve flow-through results?"
+    ],
+    keywords: [
+      { en: "flow-through", ja: "フロースルー", uses: "Flow-through improved. / Monitor flow-through weekly. / Flow-through shows efficiency." },
+      { en: "variable cost", ja: "変動費", uses: "Variable cost increased. / Control variable cost. / Variable cost affects margin." },
+      { en: "margin", ja: "利益率", uses: "Margin declined. / Improve margin strategy. / Margin is stable." },
+      { en: "efficiency", ja: "効率性", uses: "Efficiency matters. / Improve operational efficiency. / Efficiency reduces waste." },
+      { en: "analysis", ja: "分析", uses: "Data analysis is key. / We run analysis weekly. / Analysis supports decisions." }
+    ]
+  }
 ];
 
-// ---- Utils ----
+/* =========================
+   2) Helpers
+========================= */
 function pad2(n){ return n < 10 ? '0' + n : '' + n; }
 
-function log(msg) {
+function log(msg){
   var el = document.getElementById('logArea');
+  if(!el) return;
   var time = new Date().toLocaleTimeString();
   el.textContent = el.textContent + '[' + time + '] ' + msg + '\n';
 }
 
-function toast(msg) {
+function toast(msg){
   var el = document.getElementById('toastMsg');
+  if(!el) return;
   el.textContent = msg;
   el.className = 'toast show';
-  setTimeout(function(){ el.className = 'toast'; }, 1500);
+  setTimeout(function(){ el.className = 'toast'; }, 1400);
 }
 
-function getDateString() {
+function getDateString(){
   var d = new Date();
   return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
 }
 
-function updateDisplay() {
+function getTodayTopic(){
+  // 日付でローテ（topicsが3件なら3日ループ）
+  var d = new Date();
+  var idx = (d.getDate() - 1) % topics.length;
+  return topics[idx];
+}
+
+/* =========================
+   3) Render
+========================= */
+function updateStatus(){
   var today = getDateString();
   document.getElementById('dateDisplay').textContent = today;
 
@@ -242,265 +309,236 @@ function updateDisplay() {
   document.getElementById('statusDisplay').textContent =
     (opened === today) ? '状態：本日利用済み' : '状態：未利用';
 
-  log('Display updated');
+  log('Status updated');
 }
 
-function switchTab(num) {
-  document.getElementById('viewToday').className = num === 1 ? '' : 'hide';
-  document.getElementById('viewHistory').className = num === 2 ? '' : 'hide';
-  document.getElementById('viewSettings').className = num === 3 ? '' : 'hide';
+function renderTopic(){
+  var t = getTodayTopic();
 
-  document.getElementById('tab1').className = num === 1 ? 'active' : '';
-  document.getElementById('tab2').className = num === 2 ? 'active' : '';
-  document.getElementById('tab3').className = num === 3 ? 'active' : '';
+  document.getElementById('topicTitle').textContent = t.title;
+  document.getElementById('topicGuide').textContent = t.guide;
 
-  if (num === 2) loadHistory();
+  // Prompts
+  var pUl = document.getElementById('promptsList');
+  pUl.innerHTML = '';
+  for(var i=0;i<t.prompts.length;i++){
+    var li = document.createElement('li');
+    li.textContent = t.prompts[i];
+    pUl.appendChild(li);
+  }
+
+  // Keywords
+  var kUl = document.getElementById('keywordsList');
+  kUl.innerHTML = '';
+  for(var j=0;j<t.keywords.length;j++){
+    (function(kw){
+      var li2 = document.createElement('li');
+      li2.className = 'kw-item';
+      li2.innerHTML =
+        '<b>' + kw.en + '</b> <span class="muted">(' + kw.ja + ')</span>' +
+        '<div class="small muted">uses: ' + kw.uses + '</div>';
+      li2.addEventListener('click', function(){
+        copyKeyword(kw.en, kw.ja, kw.uses);
+      });
+      kUl.appendChild(li2);
+    })(t.keywords[j]);
+  }
+
+  // Notes
+  document.getElementById('notesArea').value = buildNotesText(t);
+
+  log('Topic rendered: ' + t.title);
 }
 
-function copyKeyword(en, ja, uses) {
+function buildNotesText(t){
+  var today = getDateString();
+  var lines = [];
+  lines.push('🟰SpeakUp Notes');
+  lines.push(today);
+  lines.push('');
+  lines.push('Topic: ' + t.title);
+  lines.push('');
+  lines.push('Prompts:');
+  for(var i=0;i<t.prompts.length;i++){
+    lines.push('- ' + t.prompts[i]);
+  }
+  lines.push('');
+  lines.push('Keywords:');
+  for(var j=0;j<t.keywords.length;j++){
+    var kw = t.keywords[j];
+    lines.push('- ' + kw.en + ' = ' + kw.ja);
+    lines.push('  uses: ' + kw.uses);
+  }
+  lines.push('');
+  lines.push('---');
+  lines.push('【Chat Memo（会話の要点）】');
+  lines.push('- ');
+  return lines.join('\n');
+}
+
+/* =========================
+   4) Actions
+========================= */
+function copyKeyword(en, ja, uses){
   var text = en + ' = ' + ja + '\nuses:\n- ' + uses.replace(/ \/ /g, '\n- ');
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
-  toast('コピーしました：' + en);
-  log('Copied keyword: ' + en);
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      toast('コピー：' + en);
+      log('Keyword copied: ' + en);
+    }).catch(function(e){
+      toast('コピー失敗（ブラウザ制限）');
+      log('Clipboard error: ' + e.message);
+    });
+  }else{
+    toast('コピー非対応の環境です');
+    log('Clipboard not supported');
+  }
 }
 
-function copyNotes() {
-  var el = document.getElementById('notesArea');
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(el.value);
-  toast('コピーしました');
-  log('Notes copied');
+function copyNotes(){
+  var v = document.getElementById('notesArea').value;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(v).then(function(){
+      toast('NotesコピーOK');
+      log('Notes copied');
+    }).catch(function(e){
+      toast('コピー失敗（ブラウザ制限）');
+      log('Clipboard error: ' + e.message);
+    });
+  }else{
+    toast('コピー非対応の環境です');
+    log('Clipboard not supported');
+  }
 }
 
-function testOpened() {
+function recordOpenedAndHistory(){
   var today = getDateString();
   localStorage.setItem('speakup_opened', today);
-  updateDisplay();
-  toast('今日開いたを記録');
-  log('Marked as opened: ' + today);
+
+  var t = getTodayTopic();
+  var kws = t.keywords.map(function(x){ return x.en; }).join(', ');
+
+  try{
+    var histData = localStorage.getItem('speakup_history');
+    var history = histData ? JSON.parse(histData) : [];
+    history.unshift({ date: today, topic: t.title, keywords: kws });
+    if(history.length > 20) history.length = 20;
+    localStorage.setItem('speakup_history', JSON.stringify(history));
+    log('History saved');
+  }catch(e){
+    log('History save error: ' + e.message);
+  }
+
+  updateStatus();
 }
 
-function testShortcut() {
-  var url = 'shortcuts://run-shortcut?name=SpeakUp_OpenedToday&input=text&text=' +
-    encodeURIComponent('Test: ' + getDateString());
-  log('Shortcut URL: ' + url);
-  toast('ショートカットを実行');
+function openChatGPT(){
+  var t = getTodayTopic();
+
+  var kw = t.keywords.map(function(x){ return x.en; }).join(', ');
+  var qs = [];
+  for(var i=0;i<t.prompts.length;i++){
+    qs.push((i+1) + ') ' + t.prompts[i]);
+  }
+
+  var prompt =
+    "Let's practice English speaking.\n\n" +
+    "Today's topic: " + t.title + "\n\n" +
+    "Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.\n\n" +
+    "Questions:\n" + qs.join('\n') + "\n\n" +
+    "Keywords to try using: " + kw + "\n\n" +
+    "Start with question 1.";
+
+  var url = 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
+
+  recordOpenedAndHistory();
+  toast('ChatGPTを開きます');
+  log('Opening ChatGPT...');
   window.location.href = url;
 }
 
-function loadHistory() {
+/* =========================
+   5) History
+========================= */
+function loadHistory(){
   var container = document.getElementById('historyContent');
-  try {
+  try{
     var data = localStorage.getItem('speakup_history');
     var history = data ? JSON.parse(data) : [];
-    if (history.length === 0) {
+    if(!history || history.length === 0){
       container.innerHTML = '<div class="muted">まだ履歴がありません。</div>';
       return;
     }
     var html = '';
-    for (var i=0; i<history.length; i++) {
+    for(var i=0;i<history.length;i++){
       var item = history[i];
-      html += '<div style="margin:10px 0; padding:10px; background:rgba(0,0,0,.2); border-radius:8px;">';
+      html += '<div style="margin:10px 0; padding:10px; background:rgba(0,0,0,.22); border-radius:10px;">';
       html += '<b>' + item.date + '</b><br>';
       html += '<span class="small">' + item.topic + '</span><br>';
       html += '<span class="small muted">Keywords: ' + item.keywords + '</span>';
       html += '</div>';
     }
     container.innerHTML = html;
-  } catch (e) {
+    log('History loaded');
+  }catch(e){
     container.innerHTML = '<div class="muted">エラー: ' + e.message + '</div>';
     log('History load error: ' + e.message);
   }
 }
 
-function clearAllHistory() {
+function clearAllHistory(){
   localStorage.removeItem('speakup_history');
   toast('履歴を削除しました');
   log('History cleared');
   loadHistory();
 }
 
-// ---- Render topic ----
-function renderTopic() {
-  try {
-    var d = new Date();
-    var dayOfMonth = d.getDate();
-    var topicIndex = (dayOfMonth - 1) % topics.length;
-    var topic = topics[topicIndex];
+/* =========================
+   6) Tabs
+========================= */
+function switchTab(num){
+  document.getElementById('viewToday').className    = (num === 1) ? '' : 'hide';
+  document.getElementById('viewHistory').className  = (num === 2) ? '' : 'hide';
+  document.getElementById('viewSettings').className = (num === 3) ? '' : 'hide';
 
-    // タイトル
-    document.getElementById('topicTitle').textContent = topic.title;
+  document.getElementById('tab1').className = (num === 1) ? 'active' : '';
+  document.getElementById('tab2').className = (num === 2) ? 'active' : '';
+  document.getElementById('tab3').className = (num === 3) ? 'active' : '';
 
-    // ガイド文（idが無いので、Todayカード内の最初のガイド文を上書き）
-    var guideEl = document.querySelector('#viewToday .card .muted.small');
-    if (guideEl) guideEl.textContent = topic.guide;
-
-    // Prompts（正しいID：promptList）
-    var promptsHTML = '';
-    for (var i = 0; i < topic.prompts.length; i++) {
-      promptsHTML += '<li>' + topic.prompts[i] + '</li>';
-    }
-    document.getElementById('promptList').innerHTML = promptsHTML;
-
-    // Keywords（正しいID：keywordList）
-    var keywordsHTML = '';
-    for (var j = 0; j < topic.keywords.length; j++) {
-      var kw = topic.keywords[j];
-      keywordsHTML +=
-        '<li onclick="copyKeyword(\'' +
-        kw.en.replace(/'/g, "\\'") + '\',\'' +
-        kw.ja.replace(/'/g, "\\'") + '\',\'' +
-        kw.uses.replace(/'/g, "\\'") + '\')">' +
-        '<b>' + kw.en + '</b> <span class="muted">(' + kw.ja + ')</span>' +
-        '<div class="small muted">uses: ' + kw.uses + '</div>' +
-        '</li>';
-    }
-    document.getElementById('keywordList').innerHTML = keywordsHTML;
-
-    // Notes生成（ざっくり差し替え：全文作るなら後で拡張）
-    var notes = '🟰今日のキーワード ' + topic.keywords[0].en + '\n' + getDateString() + '\n\n';
-    notes += 'Topic: ' + topic.title + '\n\nPrompts:\n- ' + topic.prompts.join('\n- ') + '\n\nKeywords:\n';
-    for (var k = 0; k < topic.keywords.length; k++) {
-      notes += '- ' + topic.keywords[k].en + ' = ' + topic.keywords[k].ja + '\n  uses: ' + topic.keywords[k].uses + '\n';
-    }
-    notes += '\n---\n【Chat Memo（会話の要点をここに追記）】\n- ';
-    document.getElementById('notesArea').value = notes;
-
-    // ChatGPT URLを生成してボタン作成
-    var kwList = topic.keywords.map(function(x){ return x.en; });
-    var qs = topic.prompts.map(function(q, idx){ return (idx+1) + ') ' + q; }).join('\n');
-
-    var prompt =
-      "Let's practice English speaking.\n\n" +
-      "Today's topic: " + topic.title + "\n\n" +
-      "Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.\n\n" +
-      "Questions:\n" + qs + "\n\n" +
-      "Keywords to try using: " + kwList.join(', ') + "\n\n" +
-      "Start with question 1.";
-
-    var url = 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
-
-    var btnHTML =
-      '<a href="' + url + '" class="btn" style="display:block; text-align:center; text-decoration:none;" onclick="recordOpened()">' +
-      "Let's speak up!" +
-      '</a>';
-
-    document.getElementById('speakUpBtnContainer').innerHTML = btnHTML;
-
-    log('Topic rendered: ' + topic.title);
-  } catch (e) {
-    log('renderTopic error: ' + e.message);
-  }
+  if(num === 2) loadHistory();
+  log('Switched tab: ' + num);
 }
 
-  // prompts
-  var promptsHTML = '';
-  for (var i=0; i<(topic.prompts||[]).length; i++) {
-    promptsHTML += '<li>' + topic.prompts[i] + '</li>';
-  }
-  document.getElementById('promptList').innerHTML = promptsHTML;
-
-  // keywords
-  var keywordsHTML = '';
-  for (var k=0; k<(topic.keywords||[]).length; k++) {
-    var kw = topic.keywords[k];
-    var en = (kw.en || '').replace(/'/g, "\\'");
-    var ja = (kw.ja || '').replace(/'/g, "\\'");
-    var uses = (kw.uses || '').replace(/'/g, "\\'");
-    keywordsHTML +=
-      '<li onclick="copyKeyword(\'' + en + '\',\'' + ja + '\',\'' + uses + '\')">' +
-      '<b>' + (kw.en || '') + '</b> <span class="muted">(' + (kw.ja || '') + ')</span>' +
-      '<div class="small muted">uses: ' + (kw.uses || '') + '</div></li>';
-  }
-  document.getElementById('keywordList').innerHTML = keywordsHTML;
-
-  // Notes
-  var firstKw = (topic.keywords && topic.keywords[0]) ? topic.keywords[0].en : '';
-  var dateStr = getDateString();
-  var notes = [];
-  notes.push('🟰今日のキーワード ' + firstKw);
-  notes.push(dateStr);
-  notes.push('');
-  notes.push('Topic: ' + (topic.title || ''));
-  notes.push('');
-  notes.push('Prompts:');
-  for (var p=0; p<(topic.prompts||[]).length; p++) notes.push('- ' + topic.prompts[p]);
-  notes.push('');
-  notes.push('Keywords:');
-  for (var kk=0; kk<(topic.keywords||[]).length; kk++) {
-    var x = topic.keywords[kk];
-    notes.push('- ' + x.en + ' = ' + x.ja);
-    notes.push('  uses: ' + x.uses);
-  }
-  notes.push('');
-  notes.push('---');
-  notes.push('【Chat Memo（会話の要点をここに追記）】');
-  notes.push('- ');
-  document.getElementById('notesArea').value = notes.join('\n');
-
-  // ChatGPT deep link
-  var kwList = [];
-  for (var z=0; z<(topic.keywords||[]).length; z++) kwList.push(topic.keywords[z].en);
-
-  var promptLines = [];
-  for (var q=0; q<(topic.prompts||[]).length; q++) promptLines.push((q+1) + ') ' + topic.prompts[q]);
-
-  var prompt =
-    "Let's practice English speaking.\n\n" +
-    "Today's topic: " + topic.title + "\n\n" +
-    "Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.\n\n" +
-    "Questions:\n" + promptLines.join('\n') + "\n\n" +
-    "Keywords to try using: " + kwList.join(', ') + "\n\n" +
-    "Start with question 1.";
-
-  var url = 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
-
-  document.getElementById('speakUpBtnContainer').innerHTML =
-    '<a href="' + url + '" class="btn" onclick="recordOpened()">Let\\'s speak up!</a>';
-}
-
-function recordOpened() {
-  var today = getDateString();
-  localStorage.setItem('speakup_opened', today);
-
-  var d = new Date();
-  var idx = (d.getDate() - 1) % topics.length;
-  var topic = topics[idx];
-
-  var kws = [];
-  for (var i=0; i<(topic.keywords||[]).length; i++) kws.push(topic.keywords[i].en);
-
-  try {
-    var histData = localStorage.getItem('speakup_history');
-    var history = histData ? JSON.parse(histData) : [];
-    history.unshift({ date: today, topic: topic.title, keywords: kws.join(', ') });
-    if (history.length > 20) history.length = 20;
-    localStorage.setItem('speakup_history', JSON.stringify(history));
-  } catch (e) {
-    log('History save error: ' + e.message);
-  }
-
-  updateDisplay();
-  toast('ChatGPTを開きます');
-  log('Opening ChatGPT via link');
-}
-
-// ---- Service Worker register (optional) ----
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js')
-      .then(function(){ log('Service worker registered'); })
-      .catch(function(e){ log('SW register failed: ' + e.message); });
-  });
-}
-
-// 起動時
-window.onload = function() {
+/* =========================
+   7) Init
+========================= */
+window.addEventListener('load', function(){
   log('App started');
-  updateDisplay();
+  updateStatus();
   renderTopic();
-  // ※ここで「自動で利用済み」を付けない（重要）
-};
-</script>
 
+  // Buttons
+  document.getElementById('btnSpeakUp').addEventListener('click', openChatGPT);
+  document.getElementById('btnCopyNotes').addEventListener('click', copyNotes);
+
+  document.getElementById('btnTestOpened').addEventListener('click', function(){
+    recordOpenedAndHistory();
+    toast('今日開いたを記録');
+  });
+  document.getElementById('btnClearOpened').addEventListener('click', function(){
+    localStorage.removeItem('speakup_opened');
+    updateStatus();
+    toast('今日開いたを解除');
+    log('Opened flag cleared');
+  });
+
+  document.getElementById('btnClearAllHistory').addEventListener('click', clearAllHistory);
+
+  // Tabs
+  document.getElementById('tab1').addEventListener('click', function(){ switchTab(1); });
+  document.getElementById('tab2').addEventListener('click', function(){ switchTab(2); });
+  document.getElementById('tab3').addEventListener('click', function(){ switchTab(3); });
+});
+</script>
 </body>
 </html>
