@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- iPhone向け -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SpeakUp">
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <meta name="theme-color" content="#0b1220">
+
+  <title>SpeakUp</title>
+
+  <style>
+    body {
+      font-family: -apple-system, sans-serif;
+      background: #0b1220;
+      color: #e9eefc;
+      margin: 0;
+      padding: 0 0 80px 0;
+    }
+    header {
+      padding: 18px 14px;
+      background: rgba(11,18,32,.9);
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    h1 { margin: 0; font-size: 18px; }
+    .sub { margin-top: 6px; color: #a9b5d6; font-size: 12px; }
+    main { padding: 12px 14px; }
+    .row { margin: 8px 0; }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px;
+      color: #a9b5d6;
+      font-size: 12px;
+      margin: 4px 4px 4px 0;
+    }
+    .card {
+      background: #111b33;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 12px 0;
+    }
+    .card h2 { margin: 0 0 10px 0; font-size: 16px; }
+    .card h3 { margin: 14px 0 8px 0; font-size: 14px; color: #6ee7ff; }
+    .muted { color: #a9b5d6; }
+    .small { font-size: 12px; }
+    ul { margin: 8px 0; padding-left: 20px; }
+    li { margin: 6px 0; }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(110,231,255,.18), rgba(124,255,166,.14));
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+    .btn-sec {
+      background: rgba(255,255,255,.04);
+      font-size: 14px;
+      font-weight: normal;
+    }
+    textarea {
+      width: 100%;
+      height: 160px;
+      padding: 12px;
+      background: rgba(0,0,0,.3);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 12px;
+      font-family: monospace;
+    }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(11,18,32,.9);
+      border-top: 1px solid rgba(255,255,255,.1);
+      display: flex;
+      padding: 10px 14px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+    nav button {
+      flex: 1;
+      padding: 10px;
+      margin: 0 3px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      color: #a9b5d6;
+      font-size: 13px;
+    }
+    nav button.active {
+      background: rgba(110,231,255,.1);
+      color: #fff;
+    }
+    .hide { display: none; }
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.9);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+    a.btn { display:block; text-align:center; text-decoration:none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>SpeakUp</h1>
+  <div class="sub">毎日20:00：未使用なら通知 → ChatGPTで英会話</div>
+</header>
+
+<main>
+  <section id="viewToday">
+    <div class="row">
+      <span class="pill" id="dateDisplay">----</span>
+      <span class="pill" id="statusDisplay">状態：未利用</span>
+    </div>
+
+    <div class="card">
+      <h2 id="topicTitle">---</h2>
+      <div class="muted small" id="topicGuide">---</div>
+
+      <h3>Prompts（順番に聞く）</h3>
+      <ul id="promptList"></ul>
+
+      <h3>Keywords（タップで復習）</h3>
+      <ul id="keywordList"></ul>
+
+      <div id="speakUpBtnContainer"></div>
+      <div class="small muted" style="margin-top:8px;">
+        押すと：お題→キーワード→ChatGPTを開いて会話開始（& 今日開いたフラグを記録）
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Notes保存用（いつでも復習）</h2>
+      <div class="small muted">
+        ショートカット「SpeakUp_SaveToNotes」を作ればワンタップ保存できます。
+      </div>
+      <div style="margin-top:10px;">
+        <textarea id="notesArea"></textarea>
+      </div>
+      <button class="btn btn-sec" onclick="copyNotes()">コピー</button>
+    </div>
+
+    <div class="card">
+      <h2>動作確認用ボタン</h2>
+      <button class="btn btn-sec" onclick="testOpened()">今日開いたを記録（テスト）</button>
+      <button class="btn btn-sec" onclick="testShortcut()">ショートカットテスト</button>
+    </div>
+  </section>
+
+  <section id="viewHistory" class="hide">
+    <div class="card">
+      <h2>History（復習）</h2>
+      <div class="small muted">Let's speak up! を押した日の記録を保存します。</div>
+      <div style="height:1px; background:rgba(255,255,255,.1); margin:12px 0;"></div>
+      <div id="historyContent" class="small muted">
+        まだ履歴がありません。Todayで "Let's speak up!" を押すと記録されます。
+      </div>
+    </div>
+    <div class="card">
+      <button class="btn btn-sec" onclick="clearAllHistory()">履歴を全削除</button>
+    </div>
+  </section>
+
+  <section id="viewSettings" class="hide">
+    <div class="card">
+      <h2>Settings</h2>
+      <h3>デバッグログ</h3>
+      <pre id="logArea" style="font-family:monospace; font-size:11px; color:#a9b5d6; white-space:pre-wrap; margin:10px 0;">起動しました
+</pre>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button id="tab1" class="active" onclick="switchTab(1)">Today</button>
+  <button id="tab2" onclick="switchTab(2)">History</button>
+  <button id="tab3" onclick="switchTab(3)">Settings</button>
+</nav>
+
+<div class="toast" id="toastMsg"></div>
+
+<script>
+// ---- Topics（あなたの配列をそのまま貼る：省略せずに入れてOK）----
+var topics = [
+  // ここにあなたのtopics配列をそのまま貼ってOK
+  // （長いので、今の内容をコピペで置き換えてください）
+];
+
+// ---- Utils ----
+function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+
+function log(msg) {
+  var el = document.getElementById('logArea');
+  var time = new Date().toLocaleTimeString();
+  el.textContent = el.textContent + '[' + time + '] ' + msg + '\n';
+}
+
+function toast(msg) {
+  var el = document.getElementById('toastMsg');
+  el.textContent = msg;
+  el.className = 'toast show';
+  setTimeout(function(){ el.className = 'toast'; }, 1500);
+}
+
+function getDateString() {
+  var d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate());
+}
+
+function updateDisplay() {
+  var today = getDateString();
+  document.getElementById('dateDisplay').textContent = today;
+
+  var opened = localStorage.getItem('speakup_opened');
+  document.getElementById('statusDisplay').textContent =
+    (opened === today) ? '状態：本日利用済み' : '状態：未利用';
+
+  log('Display updated');
+}
+
+function switchTab(num) {
+  document.getElementById('viewToday').className = num === 1 ? '' : 'hide';
+  document.getElementById('viewHistory').className = num === 2 ? '' : 'hide';
+  document.getElementById('viewSettings').className = num === 3 ? '' : 'hide';
+
+  document.getElementById('tab1').className = num === 1 ? 'active' : '';
+  document.getElementById('tab2').className = num === 2 ? 'active' : '';
+  document.getElementById('tab3').className = num === 3 ? 'active' : '';
+
+  if (num === 2) loadHistory();
+}
+
+function copyKeyword(en, ja, uses) {
+  var text = en + ' = ' + ja + '\nuses:\n- ' + uses.replace(/ \/ /g, '\n- ');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text);
+  toast('コピーしました：' + en);
+  log('Copied keyword: ' + en);
+}
+
+function copyNotes() {
+  var el = document.getElementById('notesArea');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(el.value);
+  toast('コピーしました');
+  log('Notes copied');
+}
+
+function testOpened() {
+  var today = getDateString();
+  localStorage.setItem('speakup_opened', today);
+  updateDisplay();
+  toast('今日開いたを記録');
+  log('Marked as opened: ' + today);
+}
+
+function testShortcut() {
+  var url = 'shortcuts://run-shortcut?name=SpeakUp_OpenedToday&input=text&text=' +
+    encodeURIComponent('Test: ' + getDateString());
+  log('Shortcut URL: ' + url);
+  toast('ショートカットを実行');
+  window.location.href = url;
+}
+
+function loadHistory() {
+  var container = document.getElementById('historyContent');
+  try {
+    var data = localStorage.getItem('speakup_history');
+    var history = data ? JSON.parse(data) : [];
+    if (history.length === 0) {
+      container.innerHTML = '<div class="muted">まだ履歴がありません。</div>';
+      return;
+    }
+    var html = '';
+    for (var i=0; i<history.length; i++) {
+      var item = history[i];
+      html += '<div style="margin:10px 0; padding:10px; background:rgba(0,0,0,.2); border-radius:8px;">';
+      html += '<b>' + item.date + '</b><br>';
+      html += '<span class="small">' + item.topic + '</span><br>';
+      html += '<span class="small muted">Keywords: ' + item.keywords + '</span>';
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  } catch (e) {
+    container.innerHTML = '<div class="muted">エラー: ' + e.message + '</div>';
+    log('History load error: ' + e.message);
+  }
+}
+
+function clearAllHistory() {
+  localStorage.removeItem('speakup_history');
+  toast('履歴を削除しました');
+  log('History cleared');
+  loadHistory();
+}
+
+// ---- Render topic ----
+function renderTopic() {
+  if (!topics || topics.length === 0) {
+    document.getElementById('topicTitle').textContent = 'No topics found';
+    document.getElementById('topicGuide').textContent = 'topics配列が空です';
+    return;
+  }
+
+  var d = new Date();
+  var idx = (d.getDate() - 1) % topics.length;
+  var topic = topics[idx];
+
+  document.getElementById('topicTitle').textContent = topic.title || '---';
+  document.getElementById('topicGuide').textContent = topic.guide || '';
+
+  // prompts
+  var promptsHTML = '';
+  for (var i=0; i<(topic.prompts||[]).length; i++) {
+    promptsHTML += '<li>' + topic.prompts[i] + '</li>';
+  }
+  document.getElementById('promptList').innerHTML = promptsHTML;
+
+  // keywords
+  var keywordsHTML = '';
+  for (var k=0; k<(topic.keywords||[]).length; k++) {
+    var kw = topic.keywords[k];
+    var en = (kw.en || '').replace(/'/g, "\\'");
+    var ja = (kw.ja || '').replace(/'/g, "\\'");
+    var uses = (kw.uses || '').replace(/'/g, "\\'");
+    keywordsHTML +=
+      '<li onclick="copyKeyword(\'' + en + '\',\'' + ja + '\',\'' + uses + '\')">' +
+      '<b>' + (kw.en || '') + '</b> <span class="muted">(' + (kw.ja || '') + ')</span>' +
+      '<div class="small muted">uses: ' + (kw.uses || '') + '</div></li>';
+  }
+  document.getElementById('keywordList').innerHTML = keywordsHTML;
+
+  // Notes
+  var firstKw = (topic.keywords && topic.keywords[0]) ? topic.keywords[0].en : '';
+  var dateStr = getDateString();
+  var notes = [];
+  notes.push('🟰今日のキーワード ' + firstKw);
+  notes.push(dateStr);
+  notes.push('');
+  notes.push('Topic: ' + (topic.title || ''));
+  notes.push('');
+  notes.push('Prompts:');
+  for (var p=0; p<(topic.prompts||[]).length; p++) notes.push('- ' + topic.prompts[p]);
+  notes.push('');
+  notes.push('Keywords:');
+  for (var kk=0; kk<(topic.keywords||[]).length; kk++) {
+    var x = topic.keywords[kk];
+    notes.push('- ' + x.en + ' = ' + x.ja);
+    notes.push('  uses: ' + x.uses);
+  }
+  notes.push('');
+  notes.push('---');
+  notes.push('【Chat Memo（会話の要点をここに追記）】');
+  notes.push('- ');
+  document.getElementById('notesArea').value = notes.join('\n');
+
+  // ChatGPT deep link
+  var kwList = [];
+  for (var z=0; z<(topic.keywords||[]).length; z++) kwList.push(topic.keywords[z].en);
+
+  var promptLines = [];
+  for (var q=0; q<(topic.prompts||[]).length; q++) promptLines.push((q+1) + ') ' + topic.prompts[q]);
+
+  var prompt =
+    "Let's practice English speaking.\n\n" +
+    "Today's topic: " + topic.title + "\n\n" +
+    "Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.\n\n" +
+    "Questions:\n" + promptLines.join('\n') + "\n\n" +
+    "Keywords to try using: " + kwList.join(', ') + "\n\n" +
+    "Start with question 1.";
+
+  var url = 'https://chatgpt.com/?q=' + encodeURIComponent(prompt);
+
+  document.getElementById('speakUpBtnContainer').innerHTML =
+    '<a href="' + url + '" class="btn" onclick="recordOpened()">Let\\'s speak up!</a>';
+}
+
+function recordOpened() {
+  var today = getDateString();
+  localStorage.setItem('speakup_opened', today);
+
+  var d = new Date();
+  var idx = (d.getDate() - 1) % topics.length;
+  var topic = topics[idx];
+
+  var kws = [];
+  for (var i=0; i<(topic.keywords||[]).length; i++) kws.push(topic.keywords[i].en);
+
+  try {
+    var histData = localStorage.getItem('speakup_history');
+    var history = histData ? JSON.parse(histData) : [];
+    history.unshift({ date: today, topic: topic.title, keywords: kws.join(', ') });
+    if (history.length > 20) history.length = 20;
+    localStorage.setItem('speakup_history', JSON.stringify(history));
+  } catch (e) {
+    log('History save error: ' + e.message);
+  }
+
+  updateDisplay();
+  toast('ChatGPTを開きます');
+  log('Opening ChatGPT via link');
+}
+
+// ---- Service Worker register (optional) ----
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js')
+      .then(function(){ log('Service worker registered'); })
+      .catch(function(e){ log('SW register failed: ' + e.message); });
+  });
+}
+
+// 起動時
+window.onload = function() {
+  log('App started');
+  updateDisplay();
+  renderTopic();
+  // ※ここで「自動で利用済み」を付けない（重要）
+};
+</script>
+
+</body>
+</html>
