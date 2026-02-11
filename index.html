@@ -32,15 +32,22 @@
       background:var(--bg);
       color:var(--text);
       padding:16px;
-      padding-bottom:88px; /* bottom nav */
+      padding-bottom:140px; /* bottom navに被らないよう余裕 */
     }
 
     h1{ margin:6px 0 4px; font-size:22px; letter-spacing:.2px; }
     .sub{
-      margin:0 0 14px;
+      margin:0 0 8px;
       color:var(--muted);
       font-size:12px;
       line-height:1.4;
+    }
+    .topicline{
+      margin:0 0 14px;
+      color:#cfe0ff;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.2px;
     }
 
     .card{
@@ -70,6 +77,7 @@
       border-radius:12px;
       background:rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.08);
+      cursor:pointer;
     }
     .kw-head{
       display:flex;
@@ -101,7 +109,7 @@
       border:1px solid rgba(255,255,255,.14);
       background:linear-gradient(90deg, var(--accent1), var(--accent2));
       color:#fff;
-      font-weight:800;
+      font-weight:900;
       font-size:16px;
       letter-spacing:.2px;
       cursor:pointer;
@@ -115,9 +123,13 @@
       border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.06);
       color:#fff;
-      font-weight:700;
+      font-weight:800;
       font-size:14px;
       cursor:pointer;
+    }
+    .btn-danger{
+      border-color:rgba(255,80,80,.35);
+      background:rgba(255,80,80,.10);
     }
 
     textarea{
@@ -135,12 +147,16 @@
       resize:vertical;
     }
 
-    .row{
+    /* ★Notesボタンが必ず見えるように固定レイアウト */
+    .notes-actions{
       display:flex;
       gap:10px;
-      flex-wrap:wrap;
+      margin-top:12px;
     }
-    .row .btn-secondary{ flex:1; min-width:180px; }
+    .notes-actions button{
+      flex:1;
+      min-width:160px;
+    }
 
     /* tabs */
     .hide{ display:none; }
@@ -148,9 +164,10 @@
     .bottom-nav{
       position:fixed;
       left:0; right:0; bottom:0;
+      z-index:9999;
       padding:10px 12px;
       padding-bottom:calc(10px + env(safe-area-inset-bottom));
-      background:rgba(11,18,32,.75);
+      background:rgba(11,18,32,.78);
       backdrop-filter: blur(14px);
       border-top:1px solid rgba(255,255,255,.10);
       display:flex;
@@ -164,7 +181,7 @@
       color:#fff;
       border-radius:14px;
       padding:12px 10px;
-      font-weight:800;
+      font-weight:900;
       cursor:pointer;
       text-align:center;
       user-select:none;
@@ -178,9 +195,9 @@
     .toast{
       position:fixed;
       left:50%;
-      bottom:92px;
+      bottom:104px;
       transform:translateX(-50%);
-      background:rgba(0,0,0,.75);
+      background:rgba(0,0,0,.78);
       color:#fff;
       padding:10px 12px;
       border-radius:999px;
@@ -189,6 +206,7 @@
       opacity:0;
       pointer-events:none;
       transition:opacity .18s ease;
+      z-index:10000;
     }
     .toast.show{ opacity:1; }
 
@@ -207,7 +225,7 @@
       margin-bottom:6px;
     }
     .history-date{ color:var(--muted); font-size:12px; }
-    .history-topic{ font-weight:800; }
+    .history-topic{ font-weight:900; }
     .history-kws{ color:#d9e4ff; font-size:12px; white-space:pre-wrap; }
     .small-link{
       font-size:12px;
@@ -217,10 +235,7 @@
       background:none;
       border:none;
       padding:0;
-    }
-    .danger{
-      border-color:rgba(255,80,80,.35);
-      background:rgba(255,80,80,.10);
+      font-weight:800;
     }
   </style>
 </head>
@@ -228,39 +243,43 @@
 <body>
 
   <h1>SpeakUp</h1>
-  <p class="sub">毎日20:00：未使用なら通知 → ChatGPTで英会話（PWA化もOK）</p>
+  <p class="sub">毎日20:00：未使用なら通知 → ChatGPTで英会話（PWA化OK）</p>
+  <p id="topicLine" class="topicline">Today Topic: -</p>
 
   <!-- TODAY -->
   <div id="viewToday">
 
     <div class="card">
       <h2>Prompts（順番に聞く）</h2>
+      <p id="topicGuide" class="muted" style="margin-top:-2px;"></p>
       <ul id="promptList"></ul>
     </div>
 
     <div class="card">
       <h2>Keywords（タップで復習）</h2>
-      <p class="muted">タップ：キーワードをコピーして、Notesに追記します（復習が楽）。</p>
+      <p class="muted">タップ：キーワードをコピーして、Notesに追記（復習が楽）。</p>
       <ul id="kwList" class="kws"></ul>
     </div>
 
     <button id="btnSpeak" class="btn">Let&#39;s speak up!</button>
     <p class="muted" style="margin:10px 2px 0;">
-      押すと：お題＋質問＋キーワードをChatGPTに渡して会話開始（履歴も保存）
+      押すと：お題＋質問＋キーワードをChatGPTに渡して会話開始（履歴保存）
     </p>
 
     <div class="card">
       <h2>Notes保存用（いつでも復習）</h2>
-      <p class="muted">下は自由メモ。コピーしてNotes/Notion等へ。ショートカット連携もここからでOK。</p>
+      <p class="muted">下は自由メモ。コピーしてNotes/Notionへ。ショートカット連携もここからでOK。</p>
+
       <textarea id="notesArea" placeholder="- keyword = 日本語訳
 uses: Example 1 / Example 2 / Example 3
 
 [Chat Memo（会話の要点）]
 - "></textarea>
-      <div style="height:10px;"></div>
-      <div class="row">
+
+      <!-- ★ここが確実に出るコピー/クリア -->
+      <div class="notes-actions">
         <button id="btnCopyNotes" class="btn-secondary">コピー</button>
-        <button id="btnClearNotes" class="btn-secondary danger">Notesクリア</button>
+        <button id="btnClearNotes" class="btn-secondary btn-danger">Notesクリア</button>
       </div>
     </div>
 
@@ -270,10 +289,10 @@ uses: Example 1 / Example 2 / Example 3
   <div id="viewHistory" class="hide">
     <div class="card">
       <h2>History</h2>
-      <p class="muted">直近20件。Speakボタン実行時に保存されます。</p>
-      <div class="row">
+      <p class="muted">直近20件。Let&#39;s speak up! 実行時に保存されます。</p>
+      <div class="notes-actions">
         <button id="btnExportHistory" class="btn-secondary">履歴をコピー</button>
-        <button id="btnClearHistory" class="btn-secondary danger">履歴を全削除</button>
+        <button id="btnClearHistory" class="btn-secondary btn-danger">履歴を全削除</button>
       </div>
       <div style="height:12px;"></div>
       <div id="historyList"></div>
@@ -289,14 +308,9 @@ uses: Example 1 / Example 2 / Example 3
         ここはアプリ側のデータ管理だけ置いてあります。
       </p>
       <div style="height:10px;"></div>
-      <div class="row">
-        <button id="btnResetAll" class="btn-secondary danger">全データ初期化（Notes + 履歴）</button>
+      <div class="notes-actions">
+        <button id="btnResetAll" class="btn-secondary btn-danger">全データ初期化（Notes + 履歴）</button>
       </div>
-      <div style="height:14px;"></div>
-      <p class="muted">
-        ※ Home画面に追加（PWA化）すると見た目はアプリっぽく使えます。<br>
-        ※ 追加の改善（リマインダー連携・テンプレ拡張・ショートカット連携強化）もここから育てられる。
-      </p>
     </div>
   </div>
 
@@ -310,25 +324,426 @@ uses: Example 1 / Example 2 / Example 3
   <div id="toast" class="toast">Copied</div>
 
   <script>
-    // ========= Data =========
-    const TOPIC = {
-      title: "Discussing ADR Strategy with Fusion Hotels",
-      guide: "Fusionチーム向け。ADR/OCC/OTA/レートミックスを英語で説明する練習。",
-      prompts: [
-        "What factors influence ADR in your market?",
-        "How do you balance ADR and occupancy?",
-        "What pricing strategy works best in Vietnam?",
-        "How do OTAs affect ADR performance?"
-      ],
-      keywords: [
-        { en:"pricing strategy", ja:"価格戦略", uses:"We adjust pricing strategy.\nStrategy depends on demand.\nPricing strategy is flexible." },
-        { en:"demand", ja:"需要", uses:"Demand is growing.\nWe forecast demand.\nDemand changes seasonally." },
-        { en:"OTA", ja:"オンライン旅行代理店", uses:"OTA costs are rising.\nOTA drives volume.\nOTA strategy matters." },
-        { en:"rate mix", ja:"料金構成", uses:"Rate mix changed.\nMix affects revenue.\nAnalyze rate mix monthly." }
-      ]
-    };
+    // =========================
+    // 30-day HMJ topics (daily rotation)
+    // =========================
+    const TOPICS = [
+      mk("Budget vs Forecast Variance (Rooms)", "Roomsの予算差異を説明。ADR/OCC/RevPARの観点で話す。",
+        ["What drove the variance vs Budget in Rooms revenue?",
+         "Was the gap mainly ADR-driven or occupancy-driven?",
+         "What actions would you take next month to recover?",
+         "How would you explain this to the GM in one minute?"],
+        kws([
+          ["variance","差異","Variance vs Budget is widening.\nWe need to explain the variance clearly.\nBreak down variance into ADR and OCC."],
+          ["RevPAR","レブパー","RevPAR is below budget.\nRevPAR improves with ADR or OCC.\nRevPAR trend is important for strategy."],
+          ["pricing pressure","価格下落圧力","We face pricing pressure.\nPricing pressure comes from competitors.\nPricing pressure impacts profit."],
+          ["pickup","予約の積み上がり","Pickup is slowing.\nWe monitor pickup daily.\nPickup affects occupancy forecast."]
+        ])
+      ),
 
-    // ========= Utilities =========
+      mk("Flow-Through (FT) and Profitability", "売上増減に対するGOPの伸び（FT）を英語で説明。",
+        ["How do you explain Flow-Through to non-finance teams?",
+         "What usually causes low Flow-Through when revenue increases?",
+         "Which cost lines do you check first (Rooms)?",
+         "What is your action plan to improve Flow-Through?"],
+        kws([
+          ["flow-through","フロー・スルー","Flow-through measures profit conversion.\nHigh flow-through is ADR-driven.\nLow flow-through often means variable costs rising."],
+          ["variable cost","変動費","Variable costs rise with occupancy.\nWe need to control variable cost per occupied room.\nVariable cost efficiency improves GOP."],
+          ["CPOR","販売客室あたり変動費","CPOR is increasing.\nCPOR helps isolate cost issues.\nLower CPOR supports flow-through."],
+          ["cost driver","コスト要因","Identify key cost drivers.\nCost drivers differ by department.\nWe should quantify each cost driver."]
+        ])
+      ),
+
+      mk("Undistributed Expenses (A&G / S&M / POM / Utilities)", "非配賦費用の増減を端的に説明する練習。",
+        ["Which undistributed lines changed the most vs Budget?",
+         "How do Utilities and POM typically behave seasonally?",
+         "How would you justify higher S&M spending?",
+         "What controls would you propose without hurting revenue?"],
+        kws([
+          ["undistributed expenses","非配賦費用","Undistributed expenses were contained.\nUndistributed costs impacted margin.\nWe should monitor undistributed trends."],
+          ["cost mix","コスト構成","Cost mix shifted toward S&M.\nCost mix affects profitability.\nWe need a healthy cost mix."],
+          ["seasonality","季節性","Utilities have seasonality.\nWe should adjust expectations by season.\nSeasonality impacts forecasts."],
+          ["maintenance backlog","修繕の積み残し","Maintenance backlog can grow.\nBacklog increases risk.\nWe need a prioritized plan."]
+        ])
+      ),
+
+      mk("ADR Strategy (OTA / Coupons / Rate Mix)", "OTAクーポン・レートミックスでADRが落ちる時の説明。",
+        ["What is the main cause of ADR dilution this month?",
+         "How did OTA coupons affect rate mix?",
+         "What levers can we use to protect ADR without losing volume?",
+         "How do you align Sales and Revenue teams on this?"],
+        kws([
+          ["ADR dilution","ADRの希薄化","ADR dilution came from discounting.\nCoupons accelerated ADR dilution.\nWe must control ADR dilution."],
+          ["rate mix","レートミックス","Rate mix shifted to OTA.\nRate mix affects revenue quality.\nWe should optimize rate mix."],
+          ["discount dependency","値引き依存","Discount dependency is risky.\nWe should reduce discount dependency.\nDependency lowers long-term ADR."],
+          ["channel strategy","チャネル戦略","Channel strategy drives profitability.\nDirect channel is healthier.\nWe need clear channel strategy."]
+        ])
+      ),
+
+      mk("Payroll and Productivity", "人件費と生産性（労働投入）を説明する練習。",
+        ["Which department had the largest payroll variance?",
+         "Is the issue wage rate, hours, or staffing model?",
+         "How would you measure productivity in Rooms/F&B?",
+         "What is a realistic corrective action next month?"],
+        kws([
+          ["labor productivity","労働生産性","Labor productivity declined.\nWe need to improve productivity.\nProductivity should track volume."],
+          ["staffing model","人員モデル","Staffing model needs adjustment.\nModel should match demand.\nA flexible staffing model helps."],
+          ["overtime","残業","Overtime increased cost.\nOvertime should be controlled.\nReduce overtime through scheduling."],
+          ["headcount","人員数","Headcount is above plan.\nHeadcount aligns with service level.\nOptimize headcount allocation."]
+        ])
+      ),
+
+      // --- ここから残りは同じ形式で追加（30日分） ---
+      mk("Forecast Quality (Accuracy vs Insight)", "予測の精度より、意思決定に役立つ洞察を話す。",
+        ["What was the biggest forecast miss and why?",
+         "How do you balance accuracy and speed in forecasting?",
+         "What leading indicators do you use (pickup, events, comps)?",
+         "How would you improve the forecast process next cycle?"],
+        kws([
+          ["forecast bias","予測バイアス","Forecast bias can repeat.\nWe should identify bias early.\nBias affects decisions."],
+          ["leading indicator","先行指標","Pickup is a leading indicator.\nEvents are leading indicators.\nWe monitor leading indicators weekly."],
+          ["assumption","前提","Assumptions must be explicit.\nWe should validate assumptions.\nUpdate assumptions quickly."],
+          ["scenario","シナリオ","We prepare scenarios.\nScenario planning reduces risk.\nUse best/base/worst scenarios."]
+        ])
+      ),
+
+      mk("Owner Reporting (1-minute Summary)", "オーナー向けに1分で説明する練習。",
+        ["What are the top 2 messages for the owner this month?",
+         "What is the risk to GOP commitment?",
+         "What actions are we taking immediately?",
+         "What do we need support/approval for?"],
+        kws([
+          ["headline","要点","The headline is ADR pressure.\nKeep the headline simple.\nStart with the headline."],
+          ["commitment","コミットメント","GOP commitment is at risk.\nWe aim to protect commitment.\nExplain actions to meet commitment."],
+          ["mitigation plan","対策案","We have a mitigation plan.\nPlan focuses on cost and mix.\nMitigation should be measurable."],
+          ["go-forward","今後の方針","Go-forward plan is clear.\nWe will monitor weekly.\nWe will report progress."]
+        ])
+      ),
+
+      mk("KPI Review (Rooms)", "客室KPIを英語でレビューする練習。",
+        ["Which KPI changed the most vs last month?",
+         "How do you interpret OCC vs ADR trade-off?",
+         "What does RevPAR index tell you (if applicable)?",
+         "Which KPI should we watch daily next month?"],
+        kws([
+          ["occupancy","稼働率","Occupancy stabilized.\nOccupancy impacts variable cost.\nOccupancy trend matters."],
+          ["ADR","平均客室単価","ADR fell vs budget.\nADR recovery is key.\nADR affects profit strongly."],
+          ["RevPAR","RevPAR","RevPAR missed the plan.\nRevPAR drives top-line.\nRevPAR improvement requires strategy."],
+          ["pace","予約進捗","Pace is behind.\nPace affects forecast.\nWe need pace recovery."]
+        ])
+      ),
+
+      mk("F&B Profitability (Cost of Sales)", "料飲の原価・利益の説明練習。",
+        ["What drove F&B profit variance this month?",
+         "Was the issue volume, price, or cost of sales?",
+         "How do you control waste and portion cost?",
+         "What is your plan to improve margin next month?"],
+        kws([
+          ["cost of sales","原価","Cost of sales increased.\nWe need tighter controls.\nReduce cost of sales leakage."],
+          ["waste","廃棄","Waste is too high.\nTrack waste daily.\nWaste reduction improves margin."],
+          ["menu engineering","メニュー改善","Menu engineering supports margin.\nPromote high-margin items.\nAdjust menu mix."],
+          ["banquet mix","宴会ミックス","Banquet mix changed.\nMix affects profit.\nOptimize banquet mix."]
+        ])
+      ),
+
+      mk("CapEx vs OpEx Communication", "修繕・投資の説明（CapEx/OpEx）を練習。",
+        ["Which items are CapEx vs OpEx and why?",
+         "How do you justify CapEx priority to the owner?",
+         "What is the operational risk if we delay?",
+         "How do you quantify ROI for key projects?"],
+        kws([
+          ["CapEx","資本的支出","CapEx improves asset value.\nCapEx needs prioritization.\nCapEx should have ROI."],
+          ["OpEx","運営費","OpEx impacts monthly GOP.\nOpEx needs discipline.\nSeparate OpEx from CapEx."],
+          ["risk exposure","リスク露出","Risk exposure increases with delay.\nWe need risk assessment.\nPrioritize by risk exposure."],
+          ["payback","回収期間","Payback period is acceptable.\nWe estimate payback.\nPayback supports decision."]
+        ])
+      ),
+
+      // 30日分にしたいので、残りを“実用的に”追加（短めに）
+      mk("Market & Competitor Update", "競合状況と需要の話し方。",
+        ["What changed in the market this month?",
+         "Which competitors are discounting and why?",
+         "How are events impacting demand?",
+         "What is your pricing response?"],
+        kws([
+          ["competitive set","競合群","Competitive set is aggressive.\nMonitor competitive set.\nCompare ADR and OCC."],
+          ["demand driver","需要要因","Events are demand drivers.\nDemand drivers shift.\nTrack demand drivers weekly."],
+          ["positioning","ポジショニング","Our positioning must be clear.\nPositioning supports rate.\nProtect positioning."],
+          ["response strategy","対応戦略","Response strategy should be quick.\nAvoid over-discounting.\nUse targeted offers."]
+        ])
+      ),
+
+      mk("Banquet Forecast & Margin", "宴会の予測と利益説明。",
+        ["What is the outlook for banquet revenue?",
+         "How do you manage banquet cost and staffing?",
+         "Which segments are most profitable?",
+         "What risks do you see next month?"],
+        kws([
+          ["pipeline","案件パイプライン","Pipeline is strong.\nPipeline needs conversion.\nReview pipeline weekly."],
+          ["conversion","成約率","Conversion is improving.\nBoost conversion with packages.\nConversion drives forecast."],
+          ["minimum guarantee","最低保証","Set minimum guarantee.\nGuarantee protects margin.\nUse guarantee strategically."],
+          ["margin protection","利益保護","Protect margin with controls.\nMargin protection is key.\nTrack margin by event."]
+        ])
+      ),
+
+      mk("Utilities Control Plan", "光熱費のコントロールプラン。",
+        ["Why did Utilities exceed budget?",
+         "Is it weather, usage, or equipment issues?",
+         "What quick wins can we implement?",
+         "How do you track savings results?"],
+        kws([
+          ["consumption","消費量","Consumption increased.\nTrack consumption daily.\nReduce unnecessary consumption."],
+          ["baseline","基準値","Set a baseline.\nCompare vs baseline.\nBaseline improves monitoring."],
+          ["efficiency","効率","Improve efficiency.\nEfficiency reduces cost.\nMeasure efficiency impact."],
+          ["maintenance","保守","Maintenance improves efficiency.\nPreventive maintenance matters.\nMaintenance reduces breakdowns."]
+        ])
+      ),
+
+      mk("POM Priorities", "POMの優先順位付け。",
+        ["What are the top maintenance priorities?",
+         "How do you balance guest impact and cost?",
+         "What can be postponed safely?",
+         "How do you communicate this to Operations?"],
+        kws([
+          ["priority","優先度","Set clear priorities.\nPriorities reduce confusion.\nReview priorities monthly."],
+          ["guest impact","ゲスト影響","Guest impact is high.\nFix issues affecting guest impact.\nGuest impact links to reviews."],
+          ["preventive","予防","Preventive maintenance saves cost.\nPreventive work reduces downtime.\nPlan preventive schedule."],
+          ["trade-off","トレードオフ","We must manage trade-offs.\nTrade-off between cost and quality.\nExplain trade-offs clearly."]
+        ])
+      ),
+
+      mk("S&M Spend Effectiveness", "販促費の効果と説明。",
+        ["Which campaigns drove incremental revenue?",
+         "How do you evaluate ROI of OTA promotions?",
+         "What would you stop doing next month?",
+         "What would you double down on?"],
+        kws([
+          ["ROI","投資対効果","ROI is unclear.\nWe need ROI measurement.\nImprove ROI tracking."],
+          ["incremental","純増","Incremental revenue matters.\nNot all revenue is incremental.\nEstimate incremental impact."],
+          ["promotion","販促","Promotion can dilute ADR.\nUse promotion carefully.\nPromotion should be targeted."],
+          ["attribution","貢献度分析","Attribution is difficult.\nWe need attribution logic.\nUse consistent attribution."]
+        ])
+      ),
+
+      mk("GOP Bridge Explanation", "GOPの増減要因をブリッジで説明。",
+        ["What are the top drivers of GOP variance?",
+         "How would you build a simple GOP bridge?",
+         "Which department contributed most to the gap?",
+         "What is the recovery path?"],
+        kws([
+          ["bridge analysis","ブリッジ分析","Bridge analysis explains change.\nUse bridge for clarity.\nBridge highlights key drivers."],
+          ["contribution","寄与","Contribution by department.\nQuantify contribution.\nFocus on largest contribution."],
+          ["margin","利益率","Margin declined.\nMargin depends on mix.\nProtect margin via strategy."],
+          ["recovery","回復","Recovery plan is needed.\nRecovery should be realistic.\nTrack recovery weekly."]
+        ])
+      ),
+
+      mk("Rooms Cost Lines (Housekeeping/Linen/OTA Fee)", "客室の変動費を英語で説明。",
+        ["Which rooms cost line increased and why?",
+         "Is the driver volume, price, or process?",
+         "How do you control linen and amenities cost?",
+         "How do OTA commissions impact net ADR?"],
+        kws([
+          ["housekeeping cost","清掃費","Housekeeping cost rose with OCC.\nOptimize staffing.\nControl cost per room."],
+          ["linen cost","リネン費","Linen cost increased.\nNegotiate with supplier.\nTrack linen per occupied room."],
+          ["amenities","アメニティ","Amenities cost is rising.\nStandardize amenities.\nReduce waste in amenities."],
+          ["commission","手数料","Commission impacts net ADR.\nHigher commission reduces profit.\nReview commission structure."]
+        ])
+      ),
+
+      mk("Quality vs Cost (Service Level)", "サービスレベルとコストのバランス。",
+        ["How do you keep service quality with cost pressure?",
+         "Which areas can we streamline safely?",
+         "What would you never cut?",
+         "How do you get buy-in from Operations?"],
+        kws([
+          ["service level","サービス水準","Service level must be maintained.\nDefine minimum service level.\nMonitor guest feedback."],
+          ["streamline","効率化","Streamline processes.\nStreamlining saves time.\nStreamline without harming quality."],
+          ["standardize","標準化","Standardize procedures.\nStandardization reduces errors.\nStandardize training."],
+          ["buy-in","合意","Get buy-in early.\nBuy-in speeds execution.\nExplain benefits for buy-in."]
+        ])
+      ),
+
+      mk("Daily Check Routine (What to Monitor)", "日次で見るべき指標の話し方。",
+        ["What do you check every morning and why?",
+         "Which KPI triggers an action immediately?",
+         "How do you share the daily update with teams?",
+         "What is your escalation rule?"],
+        kws([
+          ["dashboard","ダッシュボード","Dashboard shows key KPIs.\nUse dashboard daily.\nKeep dashboard simple."],
+          ["trigger","トリガー","Set clear triggers.\nTriggers drive actions.\nTriggers prevent delays."],
+          ["escalation","エスカレーション","Escalation rules are clear.\nEscalate early.\nEscalation reduces risk."],
+          ["routine","ルーティン","Routine improves consistency.\nStick to a routine.\nRoutine reduces oversight."]
+        ])
+      ),
+
+      mk("Meeting Facilitation (Finance to Ops)", "オペレーションと財務の橋渡し。",
+        ["How do you align Finance and Operations in meetings?",
+         "What questions reduce misunderstandings?",
+         "How do you handle pushback from Operations?",
+         "How do you conclude with clear actions?"],
+        kws([
+          ["align","整合する","Align on definitions.\nAlign on targets.\nAlign on next steps."],
+          ["clarify","明確化","Clarify assumptions.\nClarify ownership.\nClarify deadlines."],
+          ["pushback","反発","Handle pushback calmly.\nAsk for data.\nFocus on shared goals."],
+          ["action item","アクション項目","Define action items.\nAssign owners.\nTrack action items."]
+        ])
+      ),
+
+      mk("Automation Pitch (Non-personalization)", "非属人化ツールを英語で説明。",
+        ["What problem does automation solve in your process?",
+         "How do you reduce human error with automation?",
+         "How do you ensure shared-folder operations?",
+         "What is the ROI of automation for HMJ?"],
+        kws([
+          ["automation","自動化","Automation reduces manual work.\nAutomation improves speed.\nAutomation reduces errors."],
+          ["standardization","標準化","Standardization enables scale.\nStandardization supports quality.\nStandardization reduces variance."],
+          ["traceability","追跡性","Traceability is important.\nWe keep logs.\nTraceability helps audits."],
+          ["ROI","ROI","ROI comes from time saved.\nROI comes from fewer mistakes.\nShow ROI with numbers."]
+        ])
+      ),
+
+      mk("Data & Reporting Layer (HIP concept)", "HIP構想のData/Reportingを説明。",
+        ["What data sources are most critical for HIP?",
+         "How should we structure reporting for decision-making?",
+         "What KPIs should be standardized across hotels?",
+         "What is missing in the Operating layer today?"],
+        kws([
+          ["data integration","データ統合","Data integration is key.\nIntegrate PL and KPI.\nData integration reduces gaps."],
+          ["reporting cadence","報告頻度","Set reporting cadence.\nCadence should match decisions.\nWeekly cadence works for ops."],
+          ["standard KPI","標準KPI","Standard KPIs enable benchmarking.\nStandardize definitions.\nStandard KPIs reduce confusion."],
+          ["operating model","運用モデル","Operating model is evolving.\nWe need best practices.\nOperating model should scale."]
+        ])
+      ),
+
+      mk("Risk & Controls (Finance)", "財務視点のリスクと統制。",
+        ["What is the biggest financial risk this quarter?",
+         "Which controls are most important for hotels?",
+         "How do you detect anomalies early?",
+         "How do you respond when issues are found?"],
+        kws([
+          ["control","統制","Controls prevent leakage.\nControls improve discipline.\nReview controls regularly."],
+          ["leakage","漏れ","Leakage hurts profit.\nFind leakage quickly.\nStop leakage with controls."],
+          ["anomaly","異常","Detect anomalies early.\nAnomaly detection needs thresholds.\nInvestigate anomalies fast."],
+          ["remediation","是正","Remediation plan is needed.\nSet owners and deadlines.\nTrack remediation progress."]
+        ])
+      ),
+
+      mk("Storytelling for Finance Slides", "PPTで短く伝える練習。",
+        ["What is the single most important message?",
+         "Which 2 numbers support your message?",
+         "What is the cause and what is the action?",
+         "How do you keep it under 20 seconds?"],
+        kws([
+          ["message","メッセージ","Lead with the message.\nKeep message simple.\nRepeat the message."],
+          ["evidence","根拠","Use evidence with 2 numbers.\nEvidence builds trust.\nEvidence should be clear."],
+          ["cause","原因","State the cause clearly.\nCause links to action.\nAvoid vague causes."],
+          ["action","対応","Action must be specific.\nAction needs an owner.\nAction needs a timeline."]
+        ])
+      ),
+
+      mk("Guest Review Impact on Revenue", "レビューと売上の関係を説明。",
+        ["How do reviews affect ADR and conversion?",
+         "Which service issues show up in reviews?",
+         "What improvements have the highest impact?",
+         "How do you quantify review impact?"],
+        kws([
+          ["conversion rate","転換率","Conversion improves with reviews.\nConversion impacts OCC.\nTrack conversion rate."],
+          ["reputation","評判","Reputation supports pricing.\nReputation drives demand.\nProtect reputation."],
+          ["value perception","価値認識","Value perception affects ADR.\nImprove perceived value.\nPerception drives willingness to pay."],
+          ["impact estimation","影響推計","Estimate impact carefully.\nUse simple assumptions.\nTrack impact over time."]
+        ])
+      ),
+
+      mk("Shortage & Hiring Constraints", "人手不足の中での運営。",
+        ["What constraints are impacting staffing?",
+         "How do you prioritize tasks with limited staff?",
+         "What process changes reduce workload most?",
+         "How do you keep morale up?"],
+        kws([
+          ["constraint","制約","Constraints are real.\nWork within constraints.\nCommunicate constraints."],
+          ["prioritize","優先順位付け","Prioritize critical tasks.\nPrioritization reduces stress.\nReview priorities daily."],
+          ["workload","業務負荷","Workload is high.\nReduce workload with process changes.\nMeasure workload reduction."],
+          ["morale","士気","Morale matters.\nSupport morale with recognition.\nMorale affects performance."]
+        ])
+      ),
+
+      mk("Month-End Close Communication", "締め処理の説明。",
+        ["What delays month-end close and why?",
+         "How do you improve close timeline?",
+         "What checks do you do before finalizing?",
+         "How do you communicate status to stakeholders?"],
+        kws([
+          ["close process","締めプロセス","Close process needs discipline.\nClose timeline should be stable.\nImprove close process."],
+          ["reconciliation","照合","Reconciliation prevents errors.\nReconcile key accounts.\nFinish reconciliation early."],
+          ["cutoff","計上タイミング","Cutoff issues cause variance.\nDefine cutoff rules.\nCheck cutoff carefully."],
+          ["status update","進捗共有","Status updates reduce anxiety.\nShare status daily.\nMake updates concise."]
+        ])
+      ),
+
+      mk("Cross-hotel Benchmarking", "ホテル間ベンチマーク。",
+        ["Which hotels are outperforming and why?",
+         "What practices can be replicated quickly?",
+         "How do you adjust benchmarks by hotel type?",
+         "How do you avoid unfair comparisons?"],
+        kws([
+          ["benchmark","ベンチマーク","Benchmark drives improvement.\nUse benchmark carefully.\nBenchmark needs context."],
+          ["best practice","ベストプラクティス","Share best practices.\nAdopt best practices quickly.\nBest practices should be documented."],
+          ["hotel type","ホテルタイプ","Hotel type affects cost structure.\nAdjust for hotel type.\nCompare like-for-like."],
+          ["context","前提条件","Context matters.\nState the context.\nAvoid wrong conclusions."]
+        ])
+      ),
+
+      mk("Executive Q&A Practice", "上司のツッコミに備える。",
+        ["If asked 'Why now?', how do you answer?",
+         "If asked 'What is the downside?', how do you answer?",
+         "If asked 'What will you do differently?', how do you answer?",
+         "If asked 'What support do you need?', how do you answer?"],
+        kws([
+          ["rationale","根拠","Rationale is clear.\nRationale ties to numbers.\nKeep rationale short."],
+          ["downside","デメリット","Downside exists.\nExplain downside honestly.\nMitigate downside."],
+          ["trade-off","トレードオフ","Trade-offs are inevitable.\nExplain trade-offs.\nChoose best trade-off."],
+          ["support","支援","We need support.\nSpecify required support.\nSupport enables execution."]
+        ])
+      ),
+
+      mk("Weekly Action Planning", "週次アクションプラン。",
+        ["What are the top 3 actions this week?",
+         "Who owns each action and by when?",
+         "How do you measure success?",
+         "What risks could block execution?"],
+        kws([
+          ["owner","担当者","Assign an owner.\nOwner drives completion.\nOwner is accountable."],
+          ["deadline","期限","Set clear deadlines.\nDeadlines create urgency.\nTrack deadlines."],
+          ["metric","指標","Define success metrics.\nMetrics make progress visible.\nReview metrics weekly."],
+          ["blocker","障害","Identify blockers early.\nRemove blockers quickly.\nEscalate blockers if needed."]
+        ])
+      ),
+
+      mk("Wrap-up: HMJ Finance English Confidence", "締め：自信を持って話す。",
+        ["What is one thing you improved in your finance English?",
+         "What topic is still difficult and why?",
+         "How will you practice for the next 7 days?",
+         "What would make this tool more useful?"],
+        kws([
+          ["confidence","自信","Confidence comes from practice.\nSmall wins build confidence.\nPractice daily for confidence."],
+          ["clarity","明瞭さ","Clarity is key.\nSpeak with clarity.\nStructure improves clarity."],
+          ["consistency","継続","Consistency beats intensity.\nConsistency builds habits.\nBe consistent daily."],
+          ["feedback","フィードバック","Feedback accelerates learning.\nAsk for feedback.\nUse feedback to improve."]
+        ])
+      ),
+    ];
+
+    function mk(title, guide, prompts, keywords){
+      return { title, guide, prompts, keywords };
+    }
+    function kws(arr){
+      return arr.map(x => ({ en:x[0], ja:x[1], uses:x[2] }));
+    }
+
+    // =========================
+    // Utilities
+    // =========================
     const $ = (id) => document.getElementById(id);
 
     function toast(msg){
@@ -345,7 +760,6 @@ uses: Example 1 / Example 2 / Example 3
           return true;
         }
       }catch(e){}
-      // fallback
       try{
         const ta = document.createElement("textarea");
         ta.value = text;
@@ -369,6 +783,12 @@ uses: Example 1 / Example 2 / Example 3
       return `${y}-${m}-${day}`;
     }
 
+    function daysSinceEpochLocal(){
+      const now = new Date();
+      const localMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return Math.floor(localMidnight.getTime() / 86400000);
+    }
+
     function loadJSON(key, fallback){
       try{
         const v = localStorage.getItem(key);
@@ -382,7 +802,21 @@ uses: Example 1 / Example 2 / Example 3
       try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){}
     }
 
-    // ========= Render =========
+    // =========================
+    // Topic selection (daily rotation)
+    // =========================
+    let TOPIC = null;
+
+    function selectTodayTopic(){
+      const idx = daysSinceEpochLocal() % TOPICS.length;
+      TOPIC = TOPICS[idx];
+      $("topicLine").textContent = `Today Topic: ${TOPIC.title}  (${todayStr()})`;
+      $("topicGuide").textContent = TOPIC.guide || "";
+    }
+
+    // =========================
+    // Render
+    // =========================
     function renderTopic(){
       // prompts
       const p = $("promptList");
@@ -421,20 +855,21 @@ uses: Example 1 / Example 2 / Example 3
         li.appendChild(uses);
 
         li.addEventListener("click", async () => {
-          // Notesに追記する（コピーもする）
           const add = `- ${kw.en} = ${kw.ja}\nuses: ${kw.uses.replace(/\n/g, " / ")}\n`;
           const notes = $("notesArea");
           notes.value = (notes.value ? notes.value.replace(/\s*$/,"") + "\n" : "") + add + "\n";
+          persistNotes();
           const ok = await copyText(`${kw.en} = ${kw.ja}\n${kw.uses}`);
           toast(ok ? `Copied: ${kw.en}` : `Added: ${kw.en}`);
-          persistNotes();
         });
 
         k.appendChild(li);
       });
     }
 
-    // ========= Tabs =========
+    // =========================
+    // Tabs
+    // =========================
     function switchTab(num){
       $("viewToday").className    = (num === 1) ? "" : "hide";
       $("viewHistory").className  = (num === 2) ? "" : "hide";
@@ -447,7 +882,9 @@ uses: Example 1 / Example 2 / Example 3
       if (num === 2) renderHistory();
     }
 
-    // ========= Notes =========
+    // =========================
+    // Notes
+    // =========================
     const NOTES_KEY = "speakup_notes";
     function persistNotes(){
       try{ localStorage.setItem(NOTES_KEY, $("notesArea").value || ""); }catch(e){}
@@ -459,7 +896,9 @@ uses: Example 1 / Example 2 / Example 3
       }catch(e){}
     }
 
-    // ========= History =========
+    // =========================
+    // History
+    // =========================
     const HISTORY_KEY = "speakup_history";
     function addHistory(entry){
       const history = loadJSON(HISTORY_KEY, []);
@@ -509,7 +948,7 @@ uses: Example 1 / Example 2 / Example 3
         btn.className = "small-link";
         btn.textContent = "この回のプロンプトをコピー";
         btn.addEventListener("click", async () => {
-          const prompt = buildPromptText();
+          const prompt = buildPromptText(h.topicIndex ?? null);
           const ok = await copyText(prompt);
           toast(ok ? "Prompt copied" : "Copy failed");
         });
@@ -530,13 +969,21 @@ uses: Example 1 / Example 2 / Example 3
         .replaceAll(">","&gt;");
     }
 
-    function buildPromptText(){
-      const kwLines = TOPIC.keywords.map(k => `- ${k.en}: ${k.ja}`).join("\n");
-      const promptLines = TOPIC.prompts.map((q,i)=> `${i+1}) ${q}`).join("\n");
+    // =========================
+    // Prompt
+    // =========================
+    function buildPromptText(topicIndexOverride){
+      const topic = (topicIndexOverride === null || topicIndexOverride === undefined)
+        ? TOPIC
+        : TOPICS[topicIndexOverride % TOPICS.length];
+
+      const kwLines = topic.keywords.map(k => `- ${k.en}: ${k.ja}`).join("\n");
+      const promptLines = topic.prompts.map((q,i)=> `${i+1}) ${q}`).join("\n");
+
       return [
         "Let's practice English speaking.",
         "",
-        `Today's topic: ${TOPIC.title}`,
+        `Today's topic: ${topic.title}`,
         "",
         "Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.",
         "",
@@ -551,17 +998,16 @@ uses: Example 1 / Example 2 / Example 3
     }
 
     function openChatGPTWithPrompt(prompt){
-      // まずはコピー（ブラウザ制限対策）
       copyText(prompt).then(ok => {
         toast(ok ? "Prompt copied (opening ChatGPT)" : "Opening ChatGPT");
       });
-
-      // ChatGPT のURLへ
       const url = "https://chatgpt.com/?prompt=" + encodeURIComponent(prompt);
       window.open(url, "_blank");
     }
 
-    // ========= Actions =========
+    // =========================
+    // Actions
+    // =========================
     function bindEvents(){
       $("tab1").addEventListener("click", () => switchTab(1));
       $("tab2").addEventListener("click", () => switchTab(2));
@@ -581,13 +1027,13 @@ uses: Example 1 / Example 2 / Example 3
       });
 
       $("btnSpeak").addEventListener("click", () => {
-        const prompt = buildPromptText();
+        const prompt = buildPromptText(null);
 
-        // 履歴保存
+        // 履歴保存（その日のtopic indexも保存）
+        const idx = daysSinceEpochLocal() % TOPICS.length;
         const kws = TOPIC.keywords.map(k => `${k.en} / ${k.ja}`).join("\n");
-        addHistory({ date: todayStr(), topic: TOPIC.title, keywords: kws });
+        addHistory({ date: todayStr(), topic: TOPIC.title, topicIndex: idx, keywords: kws });
 
-        // ChatGPTへ
         openChatGPTWithPrompt(prompt);
       });
 
@@ -614,14 +1060,17 @@ uses: Example 1 / Example 2 / Example 3
       });
     }
 
-    // ========= Init =========
+    // =========================
+    // Init
+    // =========================
     (function init(){
+      selectTodayTopic();
       renderTopic();
       loadNotes();
       bindEvents();
       switchTab(1);
 
-      // Service Worker (optional) - ファイルが無くても落ちないようにガード
+      // Service Worker (optional)
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker.register("./sw.js").catch(() => {});
