@@ -26,6 +26,9 @@
       --btnbg2:rgba(255,255,255,.05);
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:16px;
+
+      /* 見出し用：新聞っぽいセリフ */
+      --title-font: "Times New Roman", Georgia, "New York", "Iowan Old Style", serif;
     }
 
     *{box-sizing:border-box}
@@ -40,16 +43,21 @@
       margin:0 auto;
       padding:18px 14px 18px;
     }
+
     header{
       margin-bottom:10px;
+      text-align:center; /* ★中央寄せ */
     }
     h1{
-      margin:0;
-      font-size:20px;
-      letter-spacing:.2px;
+      margin:6px 0 0 0;
+      font-family:var(--title-font); /* ★新聞っぽいフォント */
+      font-size:34px;
+      font-weight:800;
+      letter-spacing:.6px;
+      line-height:1.05;
     }
     .sub{
-      margin-top:6px;
+      margin-top:10px;
       color:var(--muted);
       font-size:12px;
       line-height:1.4;
@@ -103,6 +111,7 @@
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
+      justify-content:center; /* ★中央寄せ */
     }
     .pill{
       display:inline-flex;
@@ -214,7 +223,7 @@
     <header>
       <h1>SpeakUp</h1>
       <div class="sub">
-        毎日20:00：未使用なら通知 → ChatGPTで英会話（PWA化もOK）
+        毎日20:00：未使用なら通知 → ChatGPTで英会話
       </div>
       <div class="row" style="margin-top:10px;">
         <div class="pill" id="statusPill">状態：-</div>
@@ -241,7 +250,6 @@
         <div style="height:10px"></div>
         <textarea id="notesArea" placeholder="- keyword = 日本語訳&#10;uses: Example 1 / Example 2 / Example 3&#10;&#10;[Chat Memo（会話の要点）]&#10;-"></textarea>
 
-        <!-- ★ここにコピーのボタンを追加（要望どおり） -->
         <div style="height:10px"></div>
         <button class="btn-sec" id="btnCopyNotes">Notesをコピー</button>
       </div>
@@ -344,7 +352,6 @@
           { en: "prioritize", ja: "優先する", uses: "We prioritize high-impact actions. / Prioritize revenue quality. / We need to prioritize." }
         ]
       },
-      // --- 残りは“30日分”として埋める（短く、でもちゃんとホテル業務寄り） ---
       {
         title: "OTA Coupon Impact and ADR Dilution",
         guide: "OTAクーポンでADRが薄まる状況を説明する。",
@@ -361,12 +368,10 @@
           { en: "net revenue", ja: "実質売上（控除後）", uses: "Net revenue is more important than gross. / Net revenue dropped due to fees. / We track net revenue." },
           { en: "commission", ja: "手数料", uses: "OTA commission is high. / Commission impacts margin. / We negotiate commission." }
         ]
-      },
-      // ここから先は同じ構造で、30件になるように増やしてOK
+      }
     ];
 
-    // 30件未満の時は、日替わりロジックが崩れないように自動で埋める（簡易）
-    // ※あなたが後でTOPICSを30件に増やせば、この補完は不要
+    // 30件未満の時は自動で埋める（簡易）
     while (TOPICS.length < 30) {
       const i = TOPICS.length + 1;
       TOPICS.push({
@@ -382,36 +387,27 @@
           { en: "GOP", ja: "総営業利益", uses: "GOP improved. / GOP fell below budget. / We protect GOP." },
           { en: "RevPAR", ja: "販売可能客室あたり売上", uses: "RevPAR increased. / RevPAR missed budget. / We track RevPAR." },
           { en: "forecast", ja: "予測", uses: "We updated the forecast. / Forecast risk is high. / Forecast looks stable." },
-          { en: "cost control", ja: "コスト管理", uses: "Cost control is critical. / We 강화 cost control. / Cost control improved margin." },
+          { en: "cost control", ja: "コスト管理", uses: "Cost control is critical. / We strengthened cost control. / Cost control improved margin." }, /* ★ハングル除去 */
           { en: "alignment", ja: "整合/合意", uses: "We align on priorities. / Alignment is needed. / We need alignment." }
         ]
       });
     }
 
-    // =========================
-    // 日替わりトピック選択
-    // =========================
     function getTodayIndex(){
-      // ローカル日付で“日”単位で変わる
       const now = new Date();
       const y = now.getFullYear();
       const m = now.getMonth() + 1;
       const d = now.getDate();
-      // 例：YYYYMMDD を数値化して回す
       const key = y * 10000 + m * 100 + d;
       return key % TOPICS.length;
     }
 
-    // =========================
-    // UI更新
-    // =========================
     function renderTopic(){
       const idx = getTodayIndex();
       const topic = TOPICS[idx];
 
       document.getElementById('topicPill').textContent = `今日のお題：${topic.title}`;
 
-      // prompts
       const promptsBox = document.getElementById('promptsBox');
       promptsBox.textContent =
         `Questions:\n` +
@@ -420,7 +416,6 @@
         topic.keywords.map(k => k.en).join(', ') +
         `\n\nStart with question 1.`;
 
-      // keyword list
       const ul = document.getElementById('kwList');
       ul.innerHTML = '';
       topic.keywords.forEach(k => {
@@ -432,7 +427,6 @@
         ul.appendChild(li);
       });
 
-      // Notesエリアに、その日のキーワードをテンプレ挿入（既に何か書いてるなら上書きしない）
       const notesArea = document.getElementById('notesArea');
       if (!notesArea.value || notesArea.value.trim() === "" || notesArea.value.includes("- keyword = 日本語訳")) {
         const lines = topic.keywords.map(k =>
@@ -447,14 +441,9 @@
     }
 
     function updateStatus(){
-      const today = getDateString();
-      // 「今日使った」概念は削除済み。ここでは“未利用”固定にして迷わせない。
       document.getElementById('statusPill').textContent = '状態：未利用';
     }
 
-    // =========================
-    // Speakボタン：ChatGPTにプロンプトを渡す
-    // =========================
     function buildChatGPTPrompt(){
       const idx = getTodayIndex();
       const topic = TOPICS[idx];
@@ -475,9 +464,6 @@
       window.open(url, "_blank");
     }
 
-    // =========================
-    // Notesコピー（要望の機能）
-    // =========================
     async function copyNotes(){
       const text = document.getElementById('notesArea').value || '';
       if (!text.trim()){
@@ -488,7 +474,6 @@
         if (navigator.clipboard && navigator.clipboard.writeText){
           await navigator.clipboard.writeText(text);
         } else {
-          // フォールバック
           const ta = document.getElementById('notesArea');
           ta.focus();
           ta.select();
@@ -501,9 +486,6 @@
       }
     }
 
-    // =========================
-    // History（簡易）
-    // =========================
     function loadHistory(){
       const histData = localStorage.getItem('speakup_history');
       const history = histData ? JSON.parse(histData) : [];
@@ -524,9 +506,7 @@
       const kws = topic.keywords.map(k => k.en).join(', ');
       history.unshift({ date: today, topic: topic.title, keywords: kws });
 
-      // 20件まで
       if (history.length > 20) history.length = 20;
-
       localStorage.setItem('speakup_history', JSON.stringify(history));
     }
 
@@ -536,9 +516,6 @@
       toast('履歴を削除しました');
     }
 
-    // =========================
-    // Settings
-    // =========================
     function resetNotes(){
       document.getElementById('notesArea').value =
 `- keyword = 日本語訳
@@ -549,9 +526,6 @@ uses: Example 1 / Example 2 / Example 3
       toast('Notes欄を初期化しました');
     }
 
-    // =========================
-    // Tabs
-    // =========================
     function switchTab(num){
       document.getElementById('viewToday').className = (num===1) ? '' : 'hide';
       document.getElementById('viewHistory').className = (num===2) ? '' : 'hide';
@@ -564,9 +538,6 @@ uses: Example 1 / Example 2 / Example 3
       if (num===2) loadHistory();
     }
 
-    // =========================
-    // Utils
-    // =========================
     function getDateString(){
       const d = new Date();
       const y = d.getFullYear();
@@ -592,9 +563,6 @@ uses: Example 1 / Example 2 / Example 3
         .replaceAll("'",'&#39;');
     }
 
-    // =========================
-    // Event
-    // =========================
     document.getElementById('btnSpeak').addEventListener('click', ()=>{
       saveHistory();
       openChatGPT();
@@ -605,11 +573,9 @@ uses: Example 1 / Example 2 / Example 3
     document.getElementById('btnClearHistory').addEventListener('click', clearHistory);
     document.getElementById('btnResetNotes').addEventListener('click', resetNotes);
 
-    // 起動時
     window.onload = function(){
       updateStatus();
       renderTopic();
-      // ※ここで「自動で利用済み」を付けない（重要）
     };
   </script>
 </body>
