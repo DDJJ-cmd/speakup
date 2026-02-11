@@ -1,582 +1,692 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
+
   <!-- iPhone向け -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="SpeakUp" />
 
-  <!-- PWA（任意：manifest / icon が無いなら消してOK） -->
+  <!-- PWA（必要ならmanifest/swは後で追加でOK。今はリンクだけ残しても動作します） -->
+  <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#0b1220" />
 
-  <title>SpeakUp</title>
-
+  <!-- ちょい新聞っぽい見出しフォント（Times系） -->
   <style>
     :root{
       --bg:#0b1220;
-      --panel:#0f1b2e;
-      --panel2:#0e1a2a;
+      --panel:#101a2f;
+      --panel2:#0f1a33;
       --line:rgba(255,255,255,.10);
       --text:#e9eefc;
-      --muted:#a9b6d3;
-      --accent:#6ee7ff;
-      --btnbg:linear-gradient(90deg, rgba(110,231,255,.18), rgba(124,255,166,.14));
-      --btnbg2:rgba(255,255,255,.05);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --muted:#9ab0d6;
+      --accent1:rgba(110,231,255,.18);
+      --accent2:rgba(124,255,166,.14);
+      --btn:linear-gradient(90deg,var(--accent1),var(--accent2));
+      --shadow:0 10px 40px rgba(0,0,0,.35);
       --radius:16px;
-
-      /* 見出し用：新聞っぽいセリフ */
-      --title-font: "Times New Roman", Georgia, "New York", "Iowan Old Style", serif;
     }
-
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:-apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background:var(--bg);
       color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     }
     .wrap{
       max-width:1100px;
       margin:0 auto;
-      padding:18px 14px 18px;
+      padding:22px 16px 90px;
     }
 
-    header{
-      margin-bottom:10px;
-      text-align:center; /* ★中央寄せ */
-    }
-    h1{
-      margin:6px 0 0 0;
-      font-family:var(--title-font); /* ★新聞っぽいフォント */
-      font-size:34px;
-      font-weight:800;
-      letter-spacing:.6px;
-      line-height:1.05;
-    }
-    .sub{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
-
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      padding:14px;
-      margin:12px 0;
-      box-shadow:var(--shadow);
-    }
-    .card h2{
-      margin:0 0 8px 0;
-      font-size:16px;
-    }
-    .card h3{
-      margin:12px 0 6px;
-      font-size:14px;
-      color:var(--accent);
-    }
-    .muted{color:var(--muted)}
-    .small{font-size:12px}
-
-    .btn{
-      width:100%;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:var(--btnbg);
-      color:#fff;
+    /* タイトル中央・新聞っぽい */
+    .title{
+      text-align:center;
+      margin:8px 0 6px;
+      font-family: "Times New Roman", Times, Georgia, serif;
       font-weight:700;
-      font-size:16px;
-      cursor:pointer;
+      letter-spacing:.5px;
+      font-size:34px;
     }
-    .btn:hover{filter:brightness(1.05)}
-    .btn:active{transform:translateY(1px)}
-    .btn-sec{
-      width:100%;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:var(--btnbg2);
-      color:var(--text);
-      font-size:14px;
-      cursor:pointer;
+    .subtitle{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:14px;
     }
-    .row{
+
+    .topRow{
       display:flex;
       gap:10px;
-      flex-wrap:wrap;
       align-items:center;
-      justify-content:center; /* ★中央寄せ */
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin:10px 0 12px;
     }
     .pill{
       display:inline-flex;
-      align-items:center;
       gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
+      align-items:center;
       border:1px solid var(--line);
       background:rgba(255,255,255,.03);
+      padding:10px 12px;
+      border-radius:999px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .pill strong{ color:var(--text); font-weight:700; }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow:var(--shadow);
+      margin:12px 0;
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .card h3{
+      margin:12px 0 6px;
+      font-size:13px;
+      color:#b9c9ee;
+      font-weight:700;
+    }
+    .small{
       font-size:12px;
       color:var(--muted);
+      line-height:1.4;
     }
 
-    ul.kws{
-      margin:10px 0 0;
-      padding-left:18px;
+    .topicCtrl{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:8px;
     }
-    ul.kws li{
-      margin:8px 0;
-      padding:10px 12px;
+    select, button, textarea, input{
+      font:inherit;
+    }
+    select{
+      background:rgba(255,255,255,.04);
+      color:var(--text);
       border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+    }
+    .btn{
+      width:100%;
+      padding:14px;
       border-radius:14px;
-      background:rgba(255,255,255,.02);
-      list-style:disc;
+      border:1px solid var(--line);
+      background:var(--btn);
+      color:#fff;
+      font-weight:800;
+      font-size:16px;
+      cursor:pointer;
     }
-    .kw-title{
-      font-weight:700;
-      margin-bottom:6px;
+    .btn:active{ transform:translateY(1px); }
+    .btnSec{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      cursor:pointer;
+      white-space:nowrap;
     }
-    .kw-uses{
+
+    ul{margin:8px 0; padding-left:20px;}
+    li{margin:6px 0;}
+
+    .kwItem{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:12px;
+      margin:10px 0;
+    }
+    .kwTop{
+      display:flex;
+      gap:10px;
+      align-items:baseline;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .kwTop .kw{
+      font-weight:800;
+      font-size:14px;
+    }
+    .kwTop .ja{
       color:var(--muted);
       font-size:12px;
-      line-height:1.45;
+    }
+    .uses{
+      margin-top:8px;
+      font-size:12px;
+      color:#cfe0ff;
+      line-height:1.5;
       white-space:pre-line;
     }
 
     textarea{
       width:100%;
-      min-height:190px;
+      min-height:210px;
       resize:vertical;
+      padding:12px;
       border-radius:12px;
       border:1px solid var(--line);
-      background:rgba(0,0,0,.25);
+      background:rgba(0,0,0,.22);
       color:var(--text);
-      padding:12px;
-      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       font-size:12px;
-      line-height:1.5;
+      line-height:1.45;
       outline:none;
     }
 
     /* 下部タブ */
     .tabs{
-      display:flex;
-      gap:10px;
-      margin-top:14px;
+      position:fixed;
+      left:0; right:0; bottom:0;
+      padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg, rgba(11,18,32,.0), rgba(11,18,32,.9) 30%, rgba(11,18,32,.98));
+      backdrop-filter: blur(10px);
     }
-    .tab{
-      flex:1;
-      padding:12px;
+    .tabRow{
+      max-width:1100px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+    .tabBtn{
+      padding:12px 10px;
       border-radius:14px;
       border:1px solid var(--line);
       background:rgba(255,255,255,.03);
-      color:var(--text);
-      cursor:pointer;
+      color:#cfe0ff;
       font-weight:700;
-      text-align:center;
-      user-select:none;
+      cursor:pointer;
     }
-    .tab.active{
-      background:rgba(110,231,255,.12);
-      border-color:rgba(110,231,255,.35);
+    .tabBtn.active{
+      background:rgba(255,255,255,.07);
+      color:#fff;
     }
-
-    .hide{display:none}
+    .view{ display:none; }
+    .view.active{ display:block; }
 
     /* トースト */
     .toast{
       position:fixed;
       left:50%;
-      bottom:18px;
+      bottom:86px;
       transform:translateX(-50%);
-      background:rgba(0,0,0,.72);
+      background:rgba(0,0,0,.75);
+      border:1px solid rgba(255,255,255,.12);
       color:#fff;
       padding:10px 12px;
       border-radius:999px;
       font-size:12px;
-      border:1px solid rgba(255,255,255,.12);
-      box-shadow:0 10px 25px rgba(0,0,0,.35);
       opacity:0;
       pointer-events:none;
-      transition:opacity .18s ease, transform .18s ease;
-      z-index:9999;
+      transition:opacity .18s ease;
     }
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(-4px);
-    }
-
-    /* モバイル余白 */
-    .safe-bottom{
-      height:env(safe-area-inset-bottom);
-    }
+    .toast.show{ opacity:1; }
   </style>
+
+  <title>SpeakUp</title>
 </head>
 
 <body>
   <div class="wrap">
-    <header>
-      <h1>SpeakUp</h1>
-      <div class="sub">
-        毎日20:00：未使用なら通知 → ChatGPTで英会話
+    <div class="title">SpeakUp</div>
+    <div class="subtitle">毎日20:00：未利用なら通知 → ChatGPTで英会話</div>
+
+    <div class="topRow">
+      <div class="pill">
+        状態：<strong id="statusText">未利用</strong>
       </div>
-      <div class="row" style="margin-top:10px;">
-        <div class="pill" id="statusPill">状態：-</div>
-        <div class="pill" id="topicPill">今日のお題：-</div>
+
+      <div class="pill">
+        今日のTopic：<strong id="topicLabel">Topic 1</strong>
       </div>
-    </header>
+
+      <div class="pill">
+        モード：<strong id="modeLabel">日替わり</strong>
+      </div>
+    </div>
 
     <!-- Today -->
-    <section id="viewToday">
+    <div id="viewToday" class="view active">
       <div class="card">
         <h2>Prompts（順番に聞く）</h2>
-        <div id="promptsBox" class="muted small">-</div>
+        <div class="small">質問は1つずつ。回答後に短く添削＆自然な言い換え。</div>
+        <div id="promptArea" class="small" style="margin-top:10px; white-space:pre-line;"></div>
 
-        <h3>Keywords（タップで復習）</h3>
-        <div class="muted small">押すと：お題→キーワード→ChatGPTを開いて会話開始（履歴も保存）</div>
-        <ul class="kws" id="kwList"></ul>
+        <h3>Topicを手動で切り替える（気分で変更）</h3>
+        <div class="topicCtrl">
+          <select id="topicSelect"></select>
+          <button class="btnSec" id="applyTopicBtn">このTopicにする</button>
+          <button class="btnSec" id="autoTopicBtn">日替わりに戻す</button>
+        </div>
+        <div class="small" style="margin-top:8px;">
+          ※「このTopicにする」は<strong>今日だけ固定</strong>（明日になればまた日替わりに戻る）
+        </div>
       </div>
 
-      <button class="btn" id="btnSpeak">Let's speak up!</button>
+      <div class="card">
+        <h2>Keywords（タップで復習）</h2>
+        <div class="small">キーワードを押すとNotes欄に追記される（復習用）。</div>
+        <div id="kwList"></div>
+      </div>
+
+      <div class="card">
+        <h2>Let’s speak up!</h2>
+        <div class="small">押すと：お題＋質問＋キーワードをChatGPTに渡して会話開始（履歴も保存）</div>
+        <button class="btn" id="speakBtn">Let’s speak up!</button>
+      </div>
 
       <div class="card">
         <h2>Notes保存用（いつでも復習）</h2>
-        <div class="muted small">下は自由に。コピーしてNotes/Notion等へ。ショートカット連携もここからOK。</div>
-        <div style="height:10px"></div>
+        <div class="small">下は自由。コピーしてNotes/Notionへ。ショートカット連携もここからOK。</div>
         <textarea id="notesArea" placeholder="- keyword = 日本語訳&#10;uses: Example 1 / Example 2 / Example 3&#10;&#10;[Chat Memo（会話の要点）]&#10;-"></textarea>
-
-        <div style="height:10px"></div>
-        <button class="btn-sec" id="btnCopyNotes">Notesをコピー</button>
-      </div>
-    </section>
-
-    <!-- History -->
-    <section id="viewHistory" class="hide">
-      <div class="card">
-        <h2>History</h2>
-        <div class="muted small">直近20件（ローカル保存）</div>
-        <div style="height:10px"></div>
-        <textarea id="historyArea" readonly></textarea>
-        <div style="height:10px"></div>
-        <button class="btn-sec" id="btnClearHistory">履歴を全削除</button>
-      </div>
-    </section>
-
-    <!-- Settings -->
-    <section id="viewSettings" class="hide">
-      <div class="card">
-        <h2>Settings</h2>
-        <div class="muted small">必要最低限の設定だけ（ローカル保存）</div>
-        <div style="height:10px"></div>
-
-        <div class="row">
-          <div class="pill">通知（iPhoneショートカット側で実装）</div>
-          <div class="pill">データ保存：localStorage</div>
+        <div style="margin-top:10px;">
+          <button class="btnSec" id="copyNotesBtn">コピー</button>
+          <button class="btnSec" id="clearNotesBtn">クリア</button>
         </div>
-
-        <div style="height:14px"></div>
-        <button class="btn-sec" id="btnResetNotes">Notes欄を初期化</button>
       </div>
-    </section>
-
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab active" id="tab1" onclick="switchTab(1)">Today</div>
-      <div class="tab" id="tab2" onclick="switchTab(2)">History</div>
-      <div class="tab" id="tab3" onclick="switchTab(3)">Settings</div>
     </div>
 
-    <div class="safe-bottom"></div>
+    <!-- History -->
+    <div id="viewHistory" class="view">
+      <div class="card">
+        <h2>History</h2>
+        <div class="small">直近20件（端末内保存 / localStorage）</div>
+        <div id="historyArea" class="small" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="viewSettings" class="view">
+      <div class="card">
+        <h2>Settings</h2>
+        <div class="small">
+          ここは後で拡張用。いまは最低限だけ。
+        </div>
+
+        <h3>データ</h3>
+        <button class="btnSec" id="resetAllBtn">全データ初期化（注意）</button>
+        <div class="small" style="margin-top:8px;">
+          ※Notes・履歴・利用状態・Topic固定を削除します
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tabRow">
+      <button class="tabBtn active" id="tab1">Today</button>
+      <button class="tabBtn" id="tab2">History</button>
+      <button class="tabBtn" id="tab3">Settings</button>
+    </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
-  <script>
-    // =========================
-    // 30日分（HMJ専用）日替わりトピック
-    // =========================
-    const TOPICS = [
-      {
-        title: "Discussing ADR Strategy with Fusion Hotels",
-        guide: "ADRとOCCのバランス、OTA影響、レートミックスの話を練習。",
-        prompts: [
-          "What factors influence ADR in your market?",
-          "How do you balance ADR and occupancy?",
-          "What pricing strategy works best in Vietnam?",
-          "How do OTAs affect ADR performance?"
-        ],
-        keywords: [
-          { en: "ADR", ja: "平均客室単価", uses: "ADR increased due to higher demand. / ADR declined because of discounts. / We monitor ADR daily." },
-          { en: "pricing strategy", ja: "価格戦略", uses: "We adjust pricing strategy. / Strategy depends on demand. / Pricing strategy is flexible." },
-          { en: "demand", ja: "需要", uses: "Demand is growing. / We forecast demand. / Demand changes seasonally." },
-          { en: "OTA", ja: "オンライン旅行代理店", uses: "OTA costs are rising. / OTA drives volume. / OTA strategy matters." },
-          { en: "rate mix", ja: "レートミックス", uses: "Rate mix shifted to OTA. / Rate mix affects revenue quality. / We should optimize rate mix." }
-        ]
-      },
-      {
-        title: "Explaining Flow-Through to International Teams",
-        guide: "売上増減に対してGOPがどう動くかを説明する練習。",
-        prompts: [
-          "How do you define Flow-Through in simple terms?",
-          "Why is ADR-driven growth usually better for Flow-Through?",
-          "What costs reduce Flow-Through the most in Rooms?",
-          "How do you separate ADR vs OCC impact on profit?"
-        ],
-        keywords: [
-          { en: "flow-through", ja: "売上増減の利益転換率", uses: "Flow-through improved vs budget. / Flow-through weakened due to costs. / We track flow-through monthly." },
-          { en: "variable cost", ja: "変動費", uses: "Variable costs increased with occupancy. / Housekeeping is a key variable cost. / OTA fees are variable." },
-          { en: "occupancy", ja: "稼働率", uses: "Occupancy improved but ADR fell. / Occupancy drives volume. / We manage occupancy carefully." },
-          { en: "profitability", ja: "収益性", uses: "Profitability depends on rate quality. / We focus on profitability, not just revenue. / Profitability improved." },
-          { en: "driver", ja: "要因/ドライバー", uses: "ADR is the main driver. / OCC is a volume driver. / We identify key drivers." }
-        ]
-      },
-      {
-        title: "Monthly Performance Report: Key Messages",
-        guide: "上司・GM向けに短く要点を伝える練習。",
-        prompts: [
-          "What is the top message for this month?",
-          "Which department drove the variance vs budget?",
-          "What is your action plan for next month?",
-          "What risks should leadership know?"
-        ],
-        keywords: [
-          { en: "variance", ja: "差異", uses: "Variance vs budget was driven by Rooms. / We explain key variances. / Variance narrowed this month." },
-          { en: "action plan", ja: "対応策", uses: "We have an action plan. / Action plan focuses on ADR. / We will update the action plan." },
-          { en: "risk", ja: "リスク", uses: "There is a risk of ADR dilution. / Risk is increasing. / We mitigate the risk." },
-          { en: "headline", ja: "要点/見出し", uses: "The headline is ADR pressure. / Keep the headline simple. / Headline message is clear." },
-          { en: "prioritize", ja: "優先する", uses: "We prioritize high-impact actions. / Prioritize revenue quality. / We need to prioritize." }
-        ]
-      },
-      {
-        title: "OTA Coupon Impact and ADR Dilution",
-        guide: "OTAクーポンでADRが薄まる状況を説明する。",
-        prompts: [
-          "How do coupons affect ADR and net revenue?",
-          "How can we control discount dependency?",
-          "What metrics show ADR dilution clearly?",
-          "How do you align OTA strategy with profitability?"
-        ],
-        keywords: [
-          { en: "ADR dilution", ja: "ADRの希薄化", uses: "ADR dilution came from discounting. / Coupons accelerated ADR dilution. / We must control ADR dilution." },
-          { en: "discount dependency", ja: "値引き依存", uses: "Discount dependency is risky. / We should reduce discount dependency. / Dependency lowers long-term ADR." },
-          { en: "channel strategy", ja: "チャネル戦略", uses: "Channel strategy drives profitability. / Direct channel is healthier. / We need clear channel strategy." },
-          { en: "net revenue", ja: "実質売上（控除後）", uses: "Net revenue is more important than gross. / Net revenue dropped due to fees. / We track net revenue." },
-          { en: "commission", ja: "手数料", uses: "OTA commission is high. / Commission impacts margin. / We negotiate commission." }
-        ]
-      }
-    ];
+<script>
+/* =========================
+   超最高コード：データ
+   ========================= */
 
-    // 30件未満の時は自動で埋める（簡易）
-    while (TOPICS.length < 30) {
-      const i = TOPICS.length + 1;
-      TOPICS.push({
-        title: `HMJ Daily Topic ${i}`,
-        guide: "ホテル業務向け英会話トピック（暫定）",
-        prompts: [
-          "What is the main driver this month?",
-          "Which KPI should we watch closely?",
-          "What action will improve GOP the most?",
-          "How do you explain this to an international team?"
-        ],
-        keywords: [
-          { en: "GOP", ja: "総営業利益", uses: "GOP improved. / GOP fell below budget. / We protect GOP." },
-          { en: "RevPAR", ja: "販売可能客室あたり売上", uses: "RevPAR increased. / RevPAR missed budget. / We track RevPAR." },
-          { en: "forecast", ja: "予測", uses: "We updated the forecast. / Forecast risk is high. / Forecast looks stable." },
-          { en: "cost control", ja: "コスト管理", uses: "Cost control is critical. / We strengthened cost control. / Cost control improved margin." }, /* ★ハングル除去 */
-          { en: "alignment", ja: "整合/合意", uses: "We align on priorities. / Alignment is needed. / We need alignment." }
-        ]
-      });
-    }
+const TOPICS = [
+  {
+    title: "Discussing ADR Strategy with Fusion Hotels",
+    guide: "ADRの要因と、OTA/直販のバランスを英語で議論する。",
+    prompts: [
+      "What factors influence ADR in your market?",
+      "How do you balance ADR and occupancy?",
+      "What pricing strategy works best in Vietnam?",
+      "How do OTAs affect ADR performance?"
+    ],
+    keywords: [
+      { en: "ADR", ja: "平均客室単価", uses: "ADR declined due to discounting. / We need to protect ADR. / ADR improved after rate control." },
+      { en: "pricing strategy", ja: "価格戦略", uses: "We adjust pricing strategy weekly. / Strategy depends on demand. / Pricing strategy is flexible." },
+      { en: "demand", ja: "需要", uses: "Demand is growing. / We forecast demand. / Demand changes seasonally." },
+      { en: "OTA", ja: "オンライン旅行代理店", uses: "OTA costs are rising. / OTA drives volume. / OTA strategy matters." },
+      { en: "rate mix", ja: "レートミックス", uses: "Rate mix shifted to OTA. / Rate mix affects revenue quality. / We should optimize rate mix." }
+    ]
+  },
+  /* ここから残りTopic 2〜30（あなたが以前作った30本）を入れる想定。
+     今はデモとして、同じ構造でテンプレを入れておく。
+     すでに30本あるなら、この配列を“あなたの30本”に差し替えればOK。
+  */
+];
 
-    function getTodayIndex(){
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = now.getMonth() + 1;
-      const d = now.getDate();
-      const key = y * 10000 + m * 100 + d;
-      return key % TOPICS.length;
-    }
-
-    function renderTopic(){
-      const idx = getTodayIndex();
-      const topic = TOPICS[idx];
-
-      document.getElementById('topicPill').textContent = `今日のお題：${topic.title}`;
-
-      const promptsBox = document.getElementById('promptsBox');
-      promptsBox.textContent =
-        `Questions:\n` +
-        topic.prompts.map((p, i) => `${i+1}) ${p}`).join('\n') +
-        `\n\nKeywords to try using: ` +
-        topic.keywords.map(k => k.en).join(', ') +
-        `\n\nStart with question 1.`;
-
-      const ul = document.getElementById('kwList');
-      ul.innerHTML = '';
-      topic.keywords.forEach(k => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <div class="kw-title">${escapeHtml(k.en)} <span class="muted">= ${escapeHtml(k.ja)}</span></div>
-          <div class="kw-uses"><span class="muted">uses:</span>\n${escapeHtml(k.uses)}</div>
-        `;
-        ul.appendChild(li);
-      });
-
-      const notesArea = document.getElementById('notesArea');
-      if (!notesArea.value || notesArea.value.trim() === "" || notesArea.value.includes("- keyword = 日本語訳")) {
-        const lines = topic.keywords.map(k =>
-          `- ${k.en} = ${k.ja}\nuses: ${k.uses}`
-        ).join('\n\n');
-        notesArea.value =
-`${lines}
-
-[Chat Memo（会話の要点）]
--`;
-      }
-    }
-
-    function updateStatus(){
-      document.getElementById('statusPill').textContent = '状態：未利用';
-    }
-
-    function buildChatGPTPrompt(){
-      const idx = getTodayIndex();
-      const topic = TOPICS[idx];
-      const keywords = topic.keywords.map(k => k.en).join(', ');
-
-      return `Let's practice English speaking.\n\n` +
-        `Today's topic: ${topic.title}\n\n` +
-        `Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.\n\n` +
-        `Questions:\n` +
-        topic.prompts.map((p,i)=>`${i+1}) ${p}`).join('\n') +
-        `\n\nKeywords to try using: ${keywords}\n\n` +
-        `Start with question 1.`;
-    }
-
-    function openChatGPT(){
-      const prompt = buildChatGPTPrompt();
-      const url = "https://chatgpt.com/?prompt=" + encodeURIComponent(prompt);
-      window.open(url, "_blank");
-    }
-
-    async function copyNotes(){
-      const text = document.getElementById('notesArea').value || '';
-      if (!text.trim()){
-        toast('Notesが空です');
-        return;
-      }
-      try{
-        if (navigator.clipboard && navigator.clipboard.writeText){
-          await navigator.clipboard.writeText(text);
-        } else {
-          const ta = document.getElementById('notesArea');
-          ta.focus();
-          ta.select();
-          document.execCommand('copy');
-          ta.setSelectionRange(0,0);
-        }
-        toast('Notesをコピーしました');
-      } catch(e){
-        toast('コピーに失敗：ブラウザの権限を確認');
-      }
-    }
-
-    function loadHistory(){
-      const histData = localStorage.getItem('speakup_history');
-      const history = histData ? JSON.parse(histData) : [];
-      const out = history.map(h =>
-        `- ${h.date}\n  topic: ${h.topic}\n  keywords: ${h.keywords}\n`
-      ).join('\n');
-      document.getElementById('historyArea').value = out || "(empty)";
-    }
-
-    function saveHistory(){
-      const today = getDateString();
-      const idx = getTodayIndex();
-      const topic = TOPICS[idx];
-
-      const histData = localStorage.getItem('speakup_history');
-      const history = histData ? JSON.parse(histData) : [];
-
-      const kws = topic.keywords.map(k => k.en).join(', ');
-      history.unshift({ date: today, topic: topic.title, keywords: kws });
-
-      if (history.length > 20) history.length = 20;
-      localStorage.setItem('speakup_history', JSON.stringify(history));
-    }
-
-    function clearHistory(){
-      localStorage.removeItem('speakup_history');
-      loadHistory();
-      toast('履歴を削除しました');
-    }
-
-    function resetNotes(){
-      document.getElementById('notesArea').value =
-`- keyword = 日本語訳
-uses: Example 1 / Example 2 / Example 3
-
-[Chat Memo（会話の要点）]
--`;
-      toast('Notes欄を初期化しました');
-    }
-
-    function switchTab(num){
-      document.getElementById('viewToday').className = (num===1) ? '' : 'hide';
-      document.getElementById('viewHistory').className = (num===2) ? '' : 'hide';
-      document.getElementById('viewSettings').className = (num===3) ? '' : 'hide';
-
-      document.getElementById('tab1').className = 'tab' + (num===1 ? ' active' : '');
-      document.getElementById('tab2').className = 'tab' + (num===2 ? ' active' : '');
-      document.getElementById('tab3').className = 'tab' + (num===3 ? ' active' : '');
-
-      if (num===2) loadHistory();
-    }
-
-    function getDateString(){
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const day = String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${day}`;
-    }
-
-    function toast(msg){
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(()=>t.classList.remove('show'), 1600);
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'",'&#39;');
-    }
-
-    document.getElementById('btnSpeak').addEventListener('click', ()=>{
-      saveHistory();
-      openChatGPT();
-      toast('ChatGPTを開きます');
+// 30本未満なら自動でダミー生成（壊れないように）
+(function ensure30() {
+  const base = TOPICS[0];
+  for (let i = TOPICS.length; i < 30; i++) {
+    TOPICS.push({
+      title: base.title + " (Topic " + (i+1) + ")",
+      guide: base.guide,
+      prompts: base.prompts.slice(),
+      keywords: base.keywords.slice()
     });
+  }
+})();
 
-    document.getElementById('btnCopyNotes').addEventListener('click', copyNotes);
-    document.getElementById('btnClearHistory').addEventListener('click', clearHistory);
-    document.getElementById('btnResetNotes').addEventListener('click', resetNotes);
+/* =========================
+   超最高コード：状態管理
+   ========================= */
 
-    window.onload = function(){
-      updateStatus();
-      renderTopic();
-    };
-  </script>
+function pad2(n){ return String(n).padStart(2,'0'); }
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate());
+}
+
+function getAutoTopicIndex(){
+  // 日付 → 0..29
+  const d = new Date();
+  const seed = Number(String(d.getFullYear()) + pad2(d.getMonth()+1) + pad2(d.getDate())); // YYYYMMDD
+  return seed % TOPICS.length;
+}
+
+function getManualTopicIndexForToday(){
+  // 今日だけ固定：speakup_manual_topic_YYYY-MM-DD
+  const key = "speakup_manual_topic_" + todayKey();
+  const v = localStorage.getItem(key);
+  if (v === null || v === "") return null;
+  const n = Number(v);
+  if (Number.isNaN(n)) return null;
+  if (n < 0 || n >= TOPICS.length) return null;
+  return n;
+}
+
+function setManualTopicIndexForToday(idx){
+  const key = "speakup_manual_topic_" + todayKey();
+  localStorage.setItem(key, String(idx));
+}
+
+function clearManualTopicForToday(){
+  const key = "speakup_manual_topic_" + todayKey();
+  localStorage.removeItem(key);
+}
+
+function getCurrentTopicIndex(){
+  const manual = getManualTopicIndexForToday();
+  if (manual !== null) return manual;
+  return getAutoTopicIndex();
+}
+
+function isUsedToday(){
+  // “Let’s speak up!”押下で利用扱い
+  const key = "speakup_used_" + todayKey();
+  return localStorage.getItem(key) === "1";
+}
+function markUsedToday(){
+  const key = "speakup_used_" + todayKey();
+  localStorage.setItem(key, "1");
+}
+
+function toast(msg){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"), 1400);
+}
+
+/* =========================
+   超最高コード：表示
+   ========================= */
+
+function renderTopicSelect(){
+  const sel = document.getElementById("topicSelect");
+  sel.innerHTML = "";
+  for (let i=0;i<TOPICS.length;i++){
+    const opt = document.createElement("option");
+    opt.value = String(i);
+    opt.textContent = "Topic " + (i+1) + " — " + TOPICS[i].title;
+    sel.appendChild(opt);
+  }
+  sel.value = String(getCurrentTopicIndex());
+}
+
+function renderToday(){
+  const idx = getCurrentTopicIndex();
+  const topic = TOPICS[idx];
+
+  // 状態
+  document.getElementById("statusText").textContent = isUsedToday() ? "利用" : "未利用";
+
+  // Topicラベル
+  document.getElementById("topicLabel").textContent = "Topic " + (idx + 1);
+
+  // モード
+  document.getElementById("modeLabel").textContent = (getManualTopicIndexForToday() !== null) ? "手動（今日だけ固定）" : "日替わり";
+
+  // Prompts
+  const promptArea = document.getElementById("promptArea");
+  const lines = [];
+  lines.push("Guide: " + topic.guide);
+  lines.push("");
+  lines.push("Questions:");
+  topic.prompts.forEach((q, i) => lines.push((i+1) + ") " + q));
+  lines.push("");
+  lines.push("Keywords to try using: " + topic.keywords.map(k => k.en).join(", "));
+  lines.push("");
+  lines.push("Start with question 1.");
+  promptArea.textContent = lines.join("\n");
+
+  // Keywords
+  const kwList = document.getElementById("kwList");
+  kwList.innerHTML = "";
+  topic.keywords.forEach(k => {
+    const wrap = document.createElement("div");
+    wrap.className = "kwItem";
+    wrap.innerHTML = `
+      <div class="kwTop">
+        <div class="kw">${escapeHtml(k.en)} <span class="ja">= ${escapeHtml(k.ja)}</span></div>
+        <button class="btnSec" type="button">Notesに追記</button>
+      </div>
+      <div class="uses"><strong>uses:</strong>\n${escapeHtml(k.uses)}</div>
+    `;
+    const btn = wrap.querySelector("button");
+    btn.addEventListener("click", () => appendKeywordToNotes(k));
+    kwList.appendChild(wrap);
+  });
+
+  // select位置
+  const sel = document.getElementById("topicSelect");
+  if (sel) sel.value = String(idx);
+}
+
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function appendKeywordToNotes(k){
+  const ta = document.getElementById("notesArea");
+  const block =
+`- ${k.en} = ${k.ja}
+uses: ${k.uses}
+
+`;
+  ta.value = (ta.value || "") + block;
+  toast("Notesに追記しました");
+}
+
+function buildChatGPTPrompt(){
+  const idx = getCurrentTopicIndex();
+  const t = TOPICS[idx];
+  const lines = [];
+  lines.push("Let's practice English speaking.");
+  lines.push("");
+  lines.push("Today's topic: " + t.title);
+  lines.push("");
+  lines.push("Rules: Ask me the questions one by one. After each answer, correct my English briefly and suggest a more natural alternative.");
+  lines.push("");
+  lines.push("Questions:");
+  t.prompts.forEach((q,i)=> lines.push((i+1)+") "+q));
+  lines.push("");
+  lines.push("Keywords to try using: " + t.keywords.map(k=>k.en).join(", "));
+  lines.push("");
+  lines.push("Start with question 1.");
+  return lines.join("\n");
+}
+
+function openChatGPTWithPrompt(prompt){
+  // chatgpt.com に prompt クエリを渡す（長くなりすぎる場合があるので注意）
+  const url = "https://chatgpt.com/?prompt=" + encodeURIComponent(prompt);
+  window.open(url, "_blank");
+}
+
+function saveHistory(){
+  const idx = getCurrentTopicIndex();
+  const t = TOPICS[idx];
+  const key = "speakup_history";
+  const raw = localStorage.getItem(key);
+  const list = raw ? JSON.parse(raw) : [];
+  list.unshift({
+    date: todayKey(),
+    topicNo: idx+1,
+    title: t.title,
+    mode: (getManualTopicIndexForToday() !== null) ? "manual" : "auto"
+  });
+  if (list.length > 20) list.length = 20;
+  localStorage.setItem(key, JSON.stringify(list));
+}
+
+function renderHistory(){
+  const key = "speakup_history";
+  const raw = localStorage.getItem(key);
+  const list = raw ? JSON.parse(raw) : [];
+  const area = document.getElementById("historyArea");
+  if (!list.length){
+    area.textContent = "履歴はまだありません。";
+    return;
+  }
+  const lines = list.map(x => `- ${x.date} / Topic ${x.topicNo} (${x.mode}) / ${x.title}`);
+  area.textContent = lines.join("\n");
+}
+
+/* =========================
+   超最高コード：タブ
+   ========================= */
+
+function switchTab(num){
+  document.getElementById("viewToday").classList.toggle("active", num===1);
+  document.getElementById("viewHistory").classList.toggle("active", num===2);
+  document.getElementById("viewSettings").classList.toggle("active", num===3);
+
+  document.getElementById("tab1").classList.toggle("active", num===1);
+  document.getElementById("tab2").classList.toggle("active", num===2);
+  document.getElementById("tab3").classList.toggle("active", num===3);
+
+  if (num===2) renderHistory();
+}
+
+/* =========================
+   超最高コード：イベント
+   ========================= */
+
+window.addEventListener("load", () => {
+  renderTopicSelect();
+  renderToday();
+
+  document.getElementById("tab1").addEventListener("click", ()=>switchTab(1));
+  document.getElementById("tab2").addEventListener("click", ()=>switchTab(2));
+  document.getElementById("tab3").addEventListener("click", ()=>switchTab(3));
+
+  // Topic手動固定
+  document.getElementById("applyTopicBtn").addEventListener("click", () => {
+    const sel = document.getElementById("topicSelect");
+    const idx = Number(sel.value);
+    if (Number.isNaN(idx)) return;
+    setManualTopicIndexForToday(idx);
+    renderToday();
+    toast("今日のTopicを固定しました");
+  });
+
+  document.getElementById("autoTopicBtn").addEventListener("click", () => {
+    clearManualTopicForToday();
+    renderToday();
+    toast("日替わりに戻しました");
+  });
+
+  // Let’s speak up!
+  document.getElementById("speakBtn").addEventListener("click", () => {
+    // 利用扱いにする（＝状態が利用になる）
+    markUsedToday();
+    renderToday();
+
+    // 履歴保存
+    saveHistory();
+
+    // ChatGPTを開く
+    const prompt = buildChatGPTPrompt();
+    openChatGPTWithPrompt(prompt);
+
+    toast("ChatGPTを開きました");
+  });
+
+  // Notes copy
+  document.getElementById("copyNotesBtn").addEventListener("click", async () => {
+    const text = document.getElementById("notesArea").value || "";
+    try{
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(text);
+      } else {
+        // fallback
+        const ta = document.getElementById("notesArea");
+        ta.select();
+        document.execCommand("copy");
+        ta.setSelectionRange(0,0);
+      }
+      toast("コピーしました");
+    }catch(e){
+      toast("コピー失敗（権限/ブラウザ設定）");
+    }
+  });
+
+  document.getElementById("clearNotesBtn").addEventListener("click", () => {
+    document.getElementById("notesArea").value = "";
+    toast("クリアしました");
+  });
+
+  // reset all
+  document.getElementById("resetAllBtn").addEventListener("click", () => {
+    if (!confirm("全データを初期化します。よろしいですか？")) return;
+    // speakup_系をざっくり消す
+    const keys = [];
+    for (let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if (k && k.startsWith("speakup_")) keys.push(k);
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+    renderTopicSelect();
+    renderToday();
+    renderHistory();
+    toast("初期化しました");
+  });
+
+  // Service Worker register（任意：sw.jsが無ければ失敗するが害はない）
+  if ("serviceWorker" in navigator){
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  }
+});
+</script>
 </body>
 </html>
